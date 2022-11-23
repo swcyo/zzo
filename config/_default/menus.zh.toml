@@ -1,0 +1,48 @@
+[[main]]
+  identifier = "about"
+  name = "关于本站"
+  url = "about"
+  weight = 1
+
+[[main]]
+  identifier = "course"
+  name = "R语言教程"
+  url = "course"
+  weight = 2
+  
+[[main]]
+  identifier = "posts"
+  name = "博客博文"
+  url = "posts"
+  weight = 3  
+  
+
+[[main]]
+  identifier = "R-Graph-Gallery"
+  name = "R图形库"
+  url = "http://shzuro.gitee.io/r-graph-gallery/"
+  weight = 4
+
+[[main]]
+  identifier = "software"
+  name = "科研软件"
+  url = "software"
+  weight = 5
+
+[[main]]
+  identifier = "link"
+  name = "友情链接"
+  url = "link"
+  weight = 6
+
+[[main]]
+  identifier = "publication"
+  name = "科研成果"
+  url = "publication"
+  weight = 7
+  
+[[main]]
+  identifier = "archive"
+  name = "文章存档"
+  url = "archive"
+  weight = 8

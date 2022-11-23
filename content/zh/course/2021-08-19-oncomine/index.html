@@ -1,0 +1,1674 @@
+---
+title: ROnmine处理oncomine数据
+author: Song Ou-Yang
+date: '2021-08-19'
+slug: oncomine
+categories:
+  - 教程
+  - R
+tags:
+  - R
+  - R Markdown
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2021-08-19T09:55:11+08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="{{< blogdown/postref >}}index_files/plotly-binding/plotly.js"></script>
+<script src="{{< blogdown/postref >}}index_files/typedarray/typedarray.min.js"></script>
+<script src="{{< blogdown/postref >}}index_files/jquery/jquery.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/crosstalk/js/crosstalk.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/plotly-main/plotly-latest.min.js"></script>
+
+
+<ol style="list-style-type: decimal">
+<li>基本介绍</li>
+</ol>
+<p><strong>oncomine</strong>是一个很好的肿瘤数据库，功能很强大，也有可视化的操作，但是最大的问题是数据不能很好的获得，，而且自带的图很丑（而且只是png），关于oncomine的教程有很多，比较经典有解螺旋的教程，比如下面这个，基本涵盖了常用的功能：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/nwOBMA8BMVfmOHL1CM30OQ">麦子陪你做作业（三）：肿瘤经典数据库Oncomine实训操作</a></li>
+</ul>
+<p>然而，大神<a href="https://github.com/yikeshu0611">yikeshu0611</a>默默的为我们付出，之前开发了一个R包叫<code>ROncomine</code>可以很方便的获得数据，并且再次出图，不过最近又更新为<a href="https://github.com/yikeshu0611/oncomineR"><code>oncomineR</code></a>了，新版的我还没研究，这里我们还是先说老版的<code>ROncomine</code></p>
+<p>这个包以前托管在Github上（由于众所皆知的原因，国内访问Github很困难），但是目前已经删除了，好在我之前已经导入到了我的码云上了，所以也可以很快的安装。</p>
+<p>以前其实还有一个教程<a href="https://cloud.tencent.com/developer/news/285412">破解<strong>oncomine</strong>无法免费下载数据，学员<strong>开发了</strong>一款R语言包</a>，但是目前也被删除了，估计这个还是有版权的，所以我还是悄悄的写个自己看的教程</p>
+<p>首先需要安装devtools，然后调用install_git函数就可以直接安装,之后就方便了</p>
+<blockquote>
+<p>install.packages(‘devtools’)</p>
+<p>devtools::install_git(’<a href="https://gitee.com/swcyo/oncomineR&#39;">https://gitee.com/swcyo/oncomineR’)</a>)</p>
+</blockquote>
+<p>其实每一个oncomine的数据都可以使用浏览器获得，用chrome浏览器登录，随便一个地方鼠标右击找到检查元素，就可以看到代码区，使用Crtl+F查找&lt;map，我们需要的代码全都在&lt;map那一片，右击复制然后新建一个文本文档保存起来</p>
+<p>oncomineR的原理只是是把检查元素里&lt;map那串代码二次处理，从而简化工作，然后调用ploty作图，当然你也可以用ggplot2再次画图</p>
+<ol start="2" style="list-style-type: decimal">
+<li>单基因在基本中的总结（<strong>Gene Summary</strong>）</li>
+</ol>
+<p>按照解螺旋的教程，比如搜索<strong>CXCL8</strong>基因，实际上基因名为<code>IL8</code>，然后我们可以在右边看到这样的一个热图：</p>
+<p><img src="geneSummary.png" /></p>
+<p>我们复制<code>&lt;map</code>那一串代码，保存为<code>heatmap.txt</code>文件，我们可以用<code>Oncomine_heatmap_DiseaseSummaryfor_SomeGene</code>处理</p>
+<pre class="r"><code> library(ROncomine)
+heat&lt;-Oncomine_heatmap_DiseaseSummaryfor_SomeGene(&#39;/Users/mac/Documents/GitHub/myblog/content/post/2021-08-19-oncomine/heatmap.txt&#39;) # 命名为heat
+knitr::kable(heat) ## 这步是我的教程示例代码，不需要执行</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Cancer Type</th>
+<th align="left">Analysis Type</th>
+<th align="left">meat threshold</th>
+<th align="left">meat intotal</th>
+<th align="left">expression</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">X1</td>
+<td align="left">Bladder Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">3</td>
+<td align="left">18</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X2</td>
+<td align="left">Bladder Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">3</td>
+<td align="left">18</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X3</td>
+<td align="left">Bladder Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">1</td>
+<td align="left">9</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X4</td>
+<td align="left">Bladder Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">4</td>
+<td align="left">12</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X5</td>
+<td align="left">Bladder Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">12</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X6</td>
+<td align="left">Brain and CNS Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">1</td>
+<td align="left">36</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X7</td>
+<td align="left">Brain and CNS Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">3</td>
+<td align="left">66</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X8</td>
+<td align="left">Brain and CNS Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">2</td>
+<td align="left">66</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X9</td>
+<td align="left">Brain and CNS Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">16</td>
+<td align="left">37</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X10</td>
+<td align="left">Brain and CNS Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">7</td>
+<td align="left">37</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X11</td>
+<td align="left">Breast Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">2</td>
+<td align="left">23</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X12</td>
+<td align="left">Breast Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">29</td>
+<td align="left">68</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X13</td>
+<td align="left">Breast Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">5</td>
+<td align="left">68</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X14</td>
+<td align="left">Cervical Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">4</td>
+<td align="left">10</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X15</td>
+<td align="left">Cervical Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">8</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X16</td>
+<td align="left">Colorectal Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">18</td>
+<td align="left">35</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X17</td>
+<td align="left">Colorectal Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">32</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X18</td>
+<td align="left">Colorectal Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">32</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X19</td>
+<td align="left">Colorectal Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">4</td>
+<td align="left">24</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X20</td>
+<td align="left">Colorectal Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">3</td>
+<td align="left">35</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X21</td>
+<td align="left">Colorectal Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">4</td>
+<td align="left">35</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X22</td>
+<td align="left">Esophageal Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">3</td>
+<td align="left">11</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X23</td>
+<td align="left">Esophageal Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">8</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X24</td>
+<td align="left">Esophageal Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">8</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X25</td>
+<td align="left">Esophageal Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">1</td>
+<td align="left">8</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X26</td>
+<td align="left">Esophageal Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">3</td>
+<td align="left">12</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X27</td>
+<td align="left">Esophageal Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">1</td>
+<td align="left">12</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X28</td>
+<td align="left">Gastric Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">2</td>
+<td align="left">23</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X29</td>
+<td align="left">Gastric Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">29</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X30</td>
+<td align="left">Gastric Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">29</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X31</td>
+<td align="left">Gastric Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">1</td>
+<td align="left">15</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X32</td>
+<td align="left">Gastric Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">3</td>
+<td align="left">15</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X33</td>
+<td align="left">Head and Neck Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">4</td>
+<td align="left">32</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X34</td>
+<td align="left">Head and Neck Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">14</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X35</td>
+<td align="left">Head and Neck Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">2</td>
+<td align="left">10</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X36</td>
+<td align="left">Head and Neck Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">1</td>
+<td align="left">10</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X37</td>
+<td align="left">Head and Neck Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">4</td>
+<td align="left">22</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X38</td>
+<td align="left">Head and Neck Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">6</td>
+<td align="left">22</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X39</td>
+<td align="left">Kidney Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">44</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X40</td>
+<td align="left">Kidney Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">44</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X41</td>
+<td align="left">Kidney Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">1</td>
+<td align="left">18</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X42</td>
+<td align="left">Kidney Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">1</td>
+<td align="left">18</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X43</td>
+<td align="left">Kidney Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">10</td>
+<td align="left">18</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X44</td>
+<td align="left">Kidney Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">18</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X45</td>
+<td align="left">Leukemia</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">1</td>
+<td align="left">39</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X46</td>
+<td align="left">Leukemia</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">3</td>
+<td align="left">39</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X47</td>
+<td align="left">Leukemia</td>
+<td align="left">Cancer Histology</td>
+<td align="left">6</td>
+<td align="left">117</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X48</td>
+<td align="left">Leukemia</td>
+<td align="left">Cancer Histology</td>
+<td align="left">4</td>
+<td align="left">117</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X49</td>
+<td align="left">Leukemia</td>
+<td align="left">Outlier</td>
+<td align="left">14</td>
+<td align="left">56</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X50</td>
+<td align="left">Leukemia</td>
+<td align="left">Outlier</td>
+<td align="left">12</td>
+<td align="left">56</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X51</td>
+<td align="left">Liver Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">2</td>
+<td align="left">13</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X52</td>
+<td align="left">Liver Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">15</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X53</td>
+<td align="left">Liver Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">7</td>
+<td align="left">15</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X54</td>
+<td align="left">Lung Cancer</td>
+<td align="left">Multi-cancer</td>
+<td align="left">2</td>
+<td align="left">22</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X55</td>
+<td align="left">Lung Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">10</td>
+<td align="left">36</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X56</td>
+<td align="left">Lung Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">4</td>
+<td align="left">36</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X57</td>
+<td align="left">Lymphoma</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">2</td>
+<td align="left">36</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X58</td>
+<td align="left">Lymphoma</td>
+<td align="left">Multi-cancer</td>
+<td align="left">5</td>
+<td align="left">17</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X59</td>
+<td align="left">Lymphoma</td>
+<td align="left">Outlier</td>
+<td align="left">18</td>
+<td align="left">34</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X60</td>
+<td align="left">Lymphoma</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">34</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X61</td>
+<td align="left">Melanoma</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X62</td>
+<td align="left">Melanoma</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X63</td>
+<td align="left">Melanoma</td>
+<td align="left">Multi-cancer</td>
+<td align="left">1</td>
+<td align="left">18</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X64</td>
+<td align="left">Melanoma</td>
+<td align="left">Outlier</td>
+<td align="left">7</td>
+<td align="left">22</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X65</td>
+<td align="left">Melanoma</td>
+<td align="left">Outlier</td>
+<td align="left">4</td>
+<td align="left">22</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X66</td>
+<td align="left">Myeloma</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">13</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X67</td>
+<td align="left">Myeloma</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">13</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X68</td>
+<td align="left">Myeloma</td>
+<td align="left">Multi-cancer</td>
+<td align="left">2</td>
+<td align="left">6</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X69</td>
+<td align="left">Myeloma</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">16</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X70</td>
+<td align="left">Myeloma</td>
+<td align="left">Outlier</td>
+<td align="left">3</td>
+<td align="left">16</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X71</td>
+<td align="left">Other Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">3</td>
+<td align="left">32</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X72</td>
+<td align="left">Other Cancer</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">32</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X73</td>
+<td align="left">Other Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">12</td>
+<td align="left">36</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X74</td>
+<td align="left">Other Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">36</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X75</td>
+<td align="left">Ovarian Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">5</td>
+<td align="left">19</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X76</td>
+<td align="left">Ovarian Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">19</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X77</td>
+<td align="left">Pancreatic Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="left">3</td>
+<td align="left">12</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X78</td>
+<td align="left">Pancreatic Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">1</td>
+<td align="left">14</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X79</td>
+<td align="left">Pancreatic Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">1</td>
+<td align="left">14</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X80</td>
+<td align="left">Prostate Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">7</td>
+<td align="left">30</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X81</td>
+<td align="left">Prostate Cancer</td>
+<td align="left">Outlier</td>
+<td align="left">1</td>
+<td align="left">30</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X82</td>
+<td align="left">Sarcoma</td>
+<td align="left">Cancer Histology</td>
+<td align="left">2</td>
+<td align="left">101</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X83</td>
+<td align="left">Sarcoma</td>
+<td align="left">Cancer Histology</td>
+<td align="left">1</td>
+<td align="left">101</td>
+<td align="left">under</td>
+</tr>
+<tr class="even">
+<td align="left">X84</td>
+<td align="left">Sarcoma</td>
+<td align="left">Multi-cancer</td>
+<td align="left">2</td>
+<td align="left">13</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X85</td>
+<td align="left">Sarcoma</td>
+<td align="left">Outlier</td>
+<td align="left">9</td>
+<td align="left">25</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X86</td>
+<td align="left">Sarcoma</td>
+<td align="left">Outlier</td>
+<td align="left">2</td>
+<td align="left">25</td>
+<td align="left">under</td>
+</tr>
+</tbody>
+</table>
+<p>这样我们很快的就提取了所有需要的数据，比如我们只想提取<code>Cancer vs. Normal</code>，那么可以用R语言处理，也可以用DataEditR交互式处理，或者导出来用excel处理</p>
+<pre class="r"><code># cn&lt;-heat[heat$`Analysis Type` == &#39;Cancer vs. Normal&#39;,]
+# DataEditR::data_edit(heat) # 也可以用交互式编辑
+ cn&lt;-read.csv(&#39;/Users/mac/Documents/GitHub/myblog/content/post/2021-08-19-oncomine/cn.csv&#39;)
+knitr::kable(cn)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">X</th>
+<th align="left">Cancer.Type</th>
+<th align="left">Analysis.Type.</th>
+<th align="right">meat.threshold</th>
+<th align="right">meat.intotal</th>
+<th align="left">expression</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">X6</td>
+<td align="left">Brain and CNS Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">1</td>
+<td align="right">36</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X14</td>
+<td align="left">Cervical Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">4</td>
+<td align="right">10</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X16</td>
+<td align="left">Colorectal Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">18</td>
+<td align="right">35</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X22</td>
+<td align="left">Esophageal Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">3</td>
+<td align="right">11</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X28</td>
+<td align="left">Gastric Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">2</td>
+<td align="right">23</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X33</td>
+<td align="left">Head and Neck Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">4</td>
+<td align="right">32</td>
+<td align="left">over</td>
+</tr>
+<tr class="odd">
+<td align="left">X45</td>
+<td align="left">Leukemia</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">1</td>
+<td align="right">39</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X46</td>
+<td align="left">Leukemia</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">3</td>
+<td align="right">39</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X51</td>
+<td align="left">Liver Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">2</td>
+<td align="right">13</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X57</td>
+<td align="left">Lymphoma</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">2</td>
+<td align="right">36</td>
+<td align="left">under</td>
+</tr>
+<tr class="odd">
+<td align="left">X71</td>
+<td align="left">Other Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">3</td>
+<td align="right">32</td>
+<td align="left">over</td>
+</tr>
+<tr class="even">
+<td align="left">X77</td>
+<td align="left">Pancreatic Cancer</td>
+<td align="left">Cancer vs. Normal</td>
+<td align="right">3</td>
+<td align="right">12</td>
+<td align="left">over</td>
+</tr>
+</tbody>
+</table>
+<ol start="3" style="list-style-type: decimal">
+<li>正常与癌症组织比较（<strong>Differential Analysis</strong>）</li>
+</ol>
+<p>继续使用解螺旋的示例，用Oncomine分别查询CXCL8在肠癌组织（与正常比）中高表达的数据集和低表达的数据集。筛选条件：P-value：1E-4；Fold Change：3；GENE Rank：Top10%。</p>
+<p>这里要注意，默认选择的是子数据，比如Kalser Colon，光标是在Colon Mucinous Adenocarcinoma vs. Normal，这样只是比较肿瘤亚型与正常，这个时候在<strong>Differential Analysis</strong>的GROUP BY是灰白的，如果我们要看所有，就要点击Kalser Colon，然后GROUP BY就可以选择下拉框了，我们选择Cancer and Normal Type，我们可以看到在GROUP里有很多很多的分组，其实就是很多很多的数据，我们想要的都可以提取了</p>
+<p>默认的是一个barplot，出现的是直方图，鼠标在柱子上停留就可以看到value，也就是我们需要的<br />
+<img src="demo/2.png" /></p>
+<p>可以看到有一个箱式图的图标，点一下就变成了Boxplot，鼠标房子Box上可以看到参数</p>
+<p><img src="demo/4.jpeg" /></p>
+<p>同样的办法，复制&lt;map代码区并保存为文本文件，比如命名为box.txt,这里其实box和bar的界面结果是一样的，我们在bar里复制，然后使用<code>Oncomine_bar</code>函数</p>
+<pre class="r"><code> box&lt;-Oncomine_bar(&#39;/Users/mac/Documents/GitHub/myblog/content/post/2021-08-19-oncomine/box.txt&#39;)
+knitr::kable(box)</code></pre>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="30%" />
+<col width="9%" />
+<col width="23%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">Expression value</th>
+<th align="left">Cancer Type</th>
+<th align="left">Sample Name</th>
+<th align="left">Normal Tissue Type</th>
+<th align="left">Legend Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">3.509</td>
+<td align="left">Colon Small Cell Carcinoma</td>
+<td align="left">T4360A3</td>
+<td align="left">No value</td>
+<td align="left">No value</td>
+</tr>
+<tr class="even">
+<td align="right">4.205</td>
+<td align="left">Colon Signet Ring Cell Adenocarcinoma</td>
+<td align="left">T5245A1</td>
+<td align="left">No value</td>
+<td align="left">No value</td>
+</tr>
+<tr class="odd">
+<td align="right">4.407</td>
+<td align="left">Rectosigmoid Mucinous Adenocarcinoma</td>
+<td align="left">T940A</td>
+<td align="left">No value</td>
+<td align="left">No value</td>
+</tr>
+<tr class="even">
+<td align="right">4.575</td>
+<td align="left">Colon Small Cell Carcinoma</td>
+<td align="left">T4360A2</td>
+<td align="left">No value</td>
+<td align="left">No value</td>
+</tr>
+<tr class="odd">
+<td align="right">5.109</td>
+<td align="left">Rectal Signet Ring Cell Adenocarcinoma</td>
+<td align="left">T924C</td>
+<td align="left">No value</td>
+<td align="left">No value</td>
+</tr>
+<tr class="even">
+<td align="right">5.867</td>
+<td align="left">Colon Signet Ring Cell Adenocarcinoma</td>
+<td align="left">T5002A1</td>
+<td align="left">No value</td>
+<td align="left">No value</td>
+</tr>
+<tr class="odd">
+<td align="right">6.110</td>
+<td align="left">Rectosigmoid Mucinous Adenocarcinoma</td>
+<td align="left">T4980A1</td>
+<td align="left">No value</td>
+<td align="left">No value</td>
+</tr>
+<tr class="even">
+<td align="right">0.188</td>
+<td align="left">Cancer</td>
+<td align="left">N552G</td>
+<td align="left">Colon</td>
+<td align="left">Colon</td>
+</tr>
+<tr class="odd">
+<td align="right">0.315</td>
+<td align="left">Cancer</td>
+<td align="left">N1369A</td>
+<td align="left">Colon</td>
+<td align="left">Colon</td>
+</tr>
+<tr class="even">
+<td align="right">0.533</td>
+<td align="left">Cancer</td>
+<td align="left">N773A1</td>
+<td align="left">Colon</td>
+<td align="left">Colon</td>
+</tr>
+<tr class="odd">
+<td align="right">1.020</td>
+<td align="left">Cancer</td>
+<td align="left">N1102A</td>
+<td align="left">Colon</td>
+<td align="left">Colon</td>
+</tr>
+<tr class="even">
+<td align="right">1.160</td>
+<td align="left">Cancer</td>
+<td align="left">N2367A</td>
+<td align="left">Colon</td>
+<td align="left">Colon</td>
+</tr>
+<tr class="odd">
+<td align="right">2.732</td>
+<td align="left">Cancer</td>
+<td align="left">T4452A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">2.889</td>
+<td align="left">Cancer</td>
+<td align="left">T4550B</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">2.944</td>
+<td align="left">Cancer</td>
+<td align="left">T902A</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.397</td>
+<td align="left">Cancer</td>
+<td align="left">T4834A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.453</td>
+<td align="left">Cancer</td>
+<td align="left">T4354H</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.437</td>
+<td align="left">Cancer</td>
+<td align="left">T4544A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.492</td>
+<td align="left">Cancer</td>
+<td align="left">T4926A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.597</td>
+<td align="left">Cancer</td>
+<td align="left">T5376A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.623</td>
+<td align="left">Cancer</td>
+<td align="left">T4452A2</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.724</td>
+<td align="left">Cancer</td>
+<td align="left">T4452A</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.801</td>
+<td align="left">Cancer</td>
+<td align="left">T4452A3</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.183</td>
+<td align="left">Cancer</td>
+<td align="left">T5133A</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.315</td>
+<td align="left">Cancer</td>
+<td align="left">T4452A4</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.407</td>
+<td align="left">Cancer</td>
+<td align="left">T5024A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.897</td>
+<td align="left">Cancer</td>
+<td align="left">T4573A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.981</td>
+<td align="left">Cancer</td>
+<td align="left">T4984A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">6.215</td>
+<td align="left">Cancer</td>
+<td align="left">T5565A1</td>
+<td align="left">Cecum Adenocarcinoma</td>
+<td align="left">Cecum Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">1.644</td>
+<td align="left">Cancer</td>
+<td align="left">T5811A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">2.586</td>
+<td align="left">Cancer</td>
+<td align="left">T4174A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">2.747</td>
+<td align="left">Cancer</td>
+<td align="left">T4701A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.043</td>
+<td align="left">Cancer</td>
+<td align="left">T519A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.377</td>
+<td align="left">Cancer</td>
+<td align="left">T6190A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.553</td>
+<td align="left">Cancer</td>
+<td align="left">T5287A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.634</td>
+<td align="left">Cancer</td>
+<td align="left">T4660A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.748</td>
+<td align="left">Cancer</td>
+<td align="left">T573A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.838</td>
+<td align="left">Cancer</td>
+<td align="left">T740A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.877</td>
+<td align="left">Cancer</td>
+<td align="left">T4373B1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.927</td>
+<td align="left">Cancer</td>
+<td align="left">T5573A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.931</td>
+<td align="left">Cancer</td>
+<td align="left">T826A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.982</td>
+<td align="left">Cancer</td>
+<td align="left">T4448A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.052</td>
+<td align="left">Cancer</td>
+<td align="left">T4612A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.061</td>
+<td align="left">Cancer</td>
+<td align="left">T5266A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.161</td>
+<td align="left">Cancer</td>
+<td align="left">T433A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.168</td>
+<td align="left">Cancer</td>
+<td align="left">T4376A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.173</td>
+<td align="left">Cancer</td>
+<td align="left">T5589B1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.188</td>
+<td align="left">Cancer</td>
+<td align="left">T4475A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.294</td>
+<td align="left">Cancer</td>
+<td align="left">T5164A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.395</td>
+<td align="left">Cancer</td>
+<td align="left">T4956A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.441</td>
+<td align="left">Cancer</td>
+<td align="left">T4975A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.478</td>
+<td align="left">Cancer</td>
+<td align="left">T773A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.566</td>
+<td align="left">Cancer</td>
+<td align="left">T4373B2</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.761</td>
+<td align="left">Cancer</td>
+<td align="left">T949B</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.810</td>
+<td align="left">Cancer</td>
+<td align="left">T4750A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.857</td>
+<td align="left">Cancer</td>
+<td align="left">T4257A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.956</td>
+<td align="left">Cancer</td>
+<td align="left">T801A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.044</td>
+<td align="left">Cancer</td>
+<td align="left">T5162A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.077</td>
+<td align="left">Cancer</td>
+<td align="left">T5389A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.172</td>
+<td align="left">Cancer</td>
+<td align="left">T4695A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.241</td>
+<td align="left">Cancer</td>
+<td align="left">T4667A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.243</td>
+<td align="left">Cancer</td>
+<td align="left">T4508A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.286</td>
+<td align="left">Cancer</td>
+<td align="left">T4920A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.330</td>
+<td align="left">Cancer</td>
+<td align="left">T5107B1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.614</td>
+<td align="left">Cancer</td>
+<td align="left">T4373B3</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.638</td>
+<td align="left">Cancer</td>
+<td align="left">T4541A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.674</td>
+<td align="left">Cancer</td>
+<td align="left">T4489A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.819</td>
+<td align="left">Cancer</td>
+<td align="left">T4555A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.852</td>
+<td align="left">Cancer</td>
+<td align="left">T5063A</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.959</td>
+<td align="left">Cancer</td>
+<td align="left">T5102A1</td>
+<td align="left">Colon Adenocarcinoma</td>
+<td align="left">Colon Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.001</td>
+<td align="left">Cancer</td>
+<td align="left">T5513A1</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.836</td>
+<td align="left">Cancer</td>
+<td align="left">T4948A2</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.035</td>
+<td align="left">Cancer</td>
+<td align="left">T4611B1</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.225</td>
+<td align="left">Cancer</td>
+<td align="left">T4799A1</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.389</td>
+<td align="left">Cancer</td>
+<td align="left">T932B1</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.776</td>
+<td align="left">Cancer</td>
+<td align="left">T5536C4</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.838</td>
+<td align="left">Cancer</td>
+<td align="left">T451A</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.872</td>
+<td align="left">Cancer</td>
+<td align="left">T5261B1</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.087</td>
+<td align="left">Cancer</td>
+<td align="left">T4491A1</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.304</td>
+<td align="left">Cancer</td>
+<td align="left">T694C</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.676</td>
+<td align="left">Cancer</td>
+<td align="left">T4644B1</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.973</td>
+<td align="left">Cancer</td>
+<td align="left">T625A</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">6.231</td>
+<td align="left">Cancer</td>
+<td align="left">T4491A2</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+<td align="left">Colon Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">2.231</td>
+<td align="left">Cancer</td>
+<td align="left">T551C</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">2.638</td>
+<td align="left">Cancer</td>
+<td align="left">T645A</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.811</td>
+<td align="left">Cancer</td>
+<td align="left">T521B</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.441</td>
+<td align="left">Cancer</td>
+<td align="left">T789A</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.584</td>
+<td align="left">Cancer</td>
+<td align="left">T74A</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.669</td>
+<td align="left">Cancer</td>
+<td align="left">T565A</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.346</td>
+<td align="left">Cancer</td>
+<td align="left">T462A</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.547</td>
+<td align="left">Cancer</td>
+<td align="left">T420A</td>
+<td align="left">Rectal Adenocarcinoma</td>
+<td align="left">Rectal Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.798</td>
+<td align="left">Cancer</td>
+<td align="left">T4449E4</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.233</td>
+<td align="left">Cancer</td>
+<td align="left">T4449E3</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.360</td>
+<td align="left">Cancer</td>
+<td align="left">T4449E1</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.784</td>
+<td align="left">Cancer</td>
+<td align="left">T4449E2</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+<td align="left">Rectal Mucinous Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">2.439</td>
+<td align="left">Cancer</td>
+<td align="left">T5139A1</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">2.922</td>
+<td align="left">Cancer</td>
+<td align="left">T4919A1</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">2.983</td>
+<td align="left">Cancer</td>
+<td align="left">T656A</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.072</td>
+<td align="left">Cancer</td>
+<td align="left">T771A</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">3.404</td>
+<td align="left">Cancer</td>
+<td align="left">T866D</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">3.846</td>
+<td align="left">Cancer</td>
+<td align="left">T5430A1</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">4.396</td>
+<td align="left">Cancer</td>
+<td align="left">T552G</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">4.789</td>
+<td align="left">Cancer</td>
+<td align="left">T981A</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="even">
+<td align="right">5.055</td>
+<td align="left">Cancer</td>
+<td align="left">T4603A1</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+<tr class="odd">
+<td align="right">5.815</td>
+<td align="left">Cancer</td>
+<td align="left">T672A</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+<td align="left">Rectosigmoid Adenocarcinoma</td>
+</tr>
+</tbody>
+</table>
+<p>我们可以用自带的函数画个图，有两个图，一个是bar_plot，一个是box_plot</p>
+<pre class="r"><code>Oncomine_bar_plot(box)</code></pre>
+<pre><code>## 载入需要的程辑包：ggplot2</code></pre>
+<pre><code>## 
+## 载入程辑包：&#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"12d31726b42d":["function () ","plotlyVisDat"]},"cur_data":"12d31726b42d","attrs":{"12d31726b42d":{"x":{},"y":{},"text":["Expression:  3.509","Expression:  4.205","Expression:  4.407","Expression:  4.575","Expression:  5.109","Expression:  5.867","Expression:  6.11","Expression:  0.188","Expression:  0.315","Expression:  0.533","Expression:  1.02","Expression:  1.16","Expression:  2.732","Expression:  2.889","Expression:  2.944","Expression:  3.397","Expression:  3.453","Expression:  4.437","Expression:  4.492","Expression:  4.597","Expression:  4.623","Expression:  4.724","Expression:  4.801","Expression:  5.183","Expression:  5.315","Expression:  5.407","Expression:  5.897","Expression:  5.981","Expression:  6.215","Expression:  1.644","Expression:  2.586","Expression:  2.747","Expression:  3.043","Expression:  3.377","Expression:  3.553","Expression:  3.634","Expression:  3.748","Expression:  3.838","Expression:  3.877","Expression:  3.927","Expression:  3.931","Expression:  3.982","Expression:  4.052","Expression:  4.061","Expression:  4.161","Expression:  4.168","Expression:  4.173","Expression:  4.188","Expression:  4.294","Expression:  4.395","Expression:  4.441","Expression:  4.478","Expression:  4.566","Expression:  4.761","Expression:  4.81","Expression:  4.857","Expression:  4.956","Expression:  5.044","Expression:  5.077","Expression:  5.172","Expression:  5.241","Expression:  5.243","Expression:  5.286","Expression:  5.33","Expression:  5.614","Expression:  5.638","Expression:  5.674","Expression:  5.819","Expression:  5.852","Expression:  5.959","Expression:  3.001","Expression:  3.836","Expression:  4.035","Expression:  4.225","Expression:  4.389","Expression:  4.776","Expression:  4.838","Expression:  4.872","Expression:  5.087","Expression:  5.304","Expression:  5.676","Expression:  5.973","Expression:  6.231","Expression:  2.231","Expression:  2.638","Expression:  3.811","Expression:  4.441","Expression:  4.584","Expression:  4.669","Expression:  5.346","Expression:  5.547","Expression:  3.798","Expression:  4.233","Expression:  4.36","Expression:  4.784","Expression:  2.439","Expression:  2.922","Expression:  2.983","Expression:  3.072","Expression:  3.404","Expression:  3.846","Expression:  4.396","Expression:  4.789","Expression:  5.055","Expression:  5.815"],"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"<b>Bar plot<\/b>","xaxis":{"domain":[0,1],"automargin":true,"title":"`Sample Name`","type":"category","categoryorder":"array","categoryarray":["T4360A3","T5245A1","T940A","T4360A2","T924C","T5002A1","T4980A1","N552G","N1369A","N773A1","N1102A","N2367A","T4452A1","T4550B","T902A","T4834A1","T4354H","T4544A1","T4926A1","T5376A1","T4452A2","T4452A","T4452A3","T5133A","T4452A4","T5024A1","T4573A1","T4984A1","T5565A1","T5811A1","T4174A","T4701A1","T519A","T6190A1","T5287A1","T4660A1","T573A","T740A","T4373B1","T5573A1","T826A","T4448A","T4612A1","T5266A1","T433A","T4376A","T5589B1","T4475A1","T5164A1","T4956A1","T4975A1","T773A1","T4373B2","T949B","T4750A1","T4257A","T801A1","T5162A1","T5389A1","T4695A1","T4667A1","T4508A1","T4920A1","T5107B1","T4373B3","T4541A1","T4489A1","T4555A1","T5063A","T5102A1","T5513A1","T4948A2","T4611B1","T4799A1","T932B1","T5536C4","T451A","T5261B1","T4491A1","T694C","T4644B1","T625A","T4491A2","T551C","T645A","T521B","T789A","T74A","T565A","T462A","T420A","T4449E4","T4449E3","T4449E1","T4449E2","T5139A1","T4919A1","T656A","T771A","T866D","T5430A1","T552G","T981A","T4603A1","T672A"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"`Expression value`"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["T4360A3","T5245A1","T940A","T4360A2","T924C","T5002A1","T4980A1"],"y":[3.509,4.205,4.407,4.575,5.109,5.867,6.11],"text":["Expression:  3.509","Expression:  4.205","Expression:  4.407","Expression:  4.575","Expression:  5.109","Expression:  5.867","Expression:  6.11"],"type":"bar","name":"No value","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["N552G","N1369A","N773A1","N1102A","N2367A"],"y":[0.188,0.315,0.533,1.02,1.16],"text":["Expression:  0.188","Expression:  0.315","Expression:  0.533","Expression:  1.02","Expression:  1.16"],"type":"bar","name":"Colon","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["T4452A1","T4550B","T902A","T4834A1","T4354H","T4544A1","T4926A1","T5376A1","T4452A2","T4452A","T4452A3","T5133A","T4452A4","T5024A1","T4573A1","T4984A1","T5565A1"],"y":[2.732,2.889,2.944,3.397,3.453,4.437,4.492,4.597,4.623,4.724,4.801,5.183,5.315,5.407,5.897,5.981,6.215],"text":["Expression:  2.732","Expression:  2.889","Expression:  2.944","Expression:  3.397","Expression:  3.453","Expression:  4.437","Expression:  4.492","Expression:  4.597","Expression:  4.623","Expression:  4.724","Expression:  4.801","Expression:  5.183","Expression:  5.315","Expression:  5.407","Expression:  5.897","Expression:  5.981","Expression:  6.215"],"type":"bar","name":"Cecum Adenocarcinoma","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["T5811A1","T4174A","T4701A1","T519A","T6190A1","T5287A1","T4660A1","T573A","T740A","T4373B1","T5573A1","T826A","T4448A","T4612A1","T5266A1","T433A","T4376A","T5589B1","T4475A1","T5164A1","T4956A1","T4975A1","T773A1","T4373B2","T949B","T4750A1","T4257A","T801A1","T5162A1","T5389A1","T4695A1","T4667A1","T4508A1","T4920A1","T5107B1","T4373B3","T4541A1","T4489A1","T4555A1","T5063A","T5102A1"],"y":[1.644,2.586,2.747,3.043,3.377,3.553,3.634,3.748,3.838,3.877,3.927,3.931,3.982,4.052,4.061,4.161,4.168,4.173,4.188,4.294,4.395,4.441,4.478,4.566,4.761,4.81,4.857,4.956,5.044,5.077,5.172,5.241,5.243,5.286,5.33,5.614,5.638,5.674,5.819,5.852,5.959],"text":["Expression:  1.644","Expression:  2.586","Expression:  2.747","Expression:  3.043","Expression:  3.377","Expression:  3.553","Expression:  3.634","Expression:  3.748","Expression:  3.838","Expression:  3.877","Expression:  3.927","Expression:  3.931","Expression:  3.982","Expression:  4.052","Expression:  4.061","Expression:  4.161","Expression:  4.168","Expression:  4.173","Expression:  4.188","Expression:  4.294","Expression:  4.395","Expression:  4.441","Expression:  4.478","Expression:  4.566","Expression:  4.761","Expression:  4.81","Expression:  4.857","Expression:  4.956","Expression:  5.044","Expression:  5.077","Expression:  5.172","Expression:  5.241","Expression:  5.243","Expression:  5.286","Expression:  5.33","Expression:  5.614","Expression:  5.638","Expression:  5.674","Expression:  5.819","Expression:  5.852","Expression:  5.959"],"type":"bar","name":"Colon Adenocarcinoma","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["T5513A1","T4948A2","T4611B1","T4799A1","T932B1","T5536C4","T451A","T5261B1","T4491A1","T694C","T4644B1","T625A","T4491A2"],"y":[3.001,3.836,4.035,4.225,4.389,4.776,4.838,4.872,5.087,5.304,5.676,5.973,6.231],"text":["Expression:  3.001","Expression:  3.836","Expression:  4.035","Expression:  4.225","Expression:  4.389","Expression:  4.776","Expression:  4.838","Expression:  4.872","Expression:  5.087","Expression:  5.304","Expression:  5.676","Expression:  5.973","Expression:  6.231"],"type":"bar","name":"Colon Mucinous Adenocarcinoma","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["T551C","T645A","T521B","T789A","T74A","T565A","T462A","T420A"],"y":[2.231,2.638,3.811,4.441,4.584,4.669,5.346,5.547],"text":["Expression:  2.231","Expression:  2.638","Expression:  3.811","Expression:  4.441","Expression:  4.584","Expression:  4.669","Expression:  5.346","Expression:  5.547"],"type":"bar","name":"Rectal Adenocarcinoma","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"textfont":{"color":"rgba(255,217,47,1)"},"error_y":{"color":"rgba(255,217,47,1)"},"error_x":{"color":"rgba(255,217,47,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["T4449E4","T4449E3","T4449E1","T4449E2"],"y":[3.798,4.233,4.36,4.784],"text":["Expression:  3.798","Expression:  4.233","Expression:  4.36","Expression:  4.784"],"type":"bar","name":"Rectal Mucinous Adenocarcinoma","marker":{"color":"rgba(229,196,148,1)","line":{"color":"rgba(229,196,148,1)"}},"textfont":{"color":"rgba(229,196,148,1)"},"error_y":{"color":"rgba(229,196,148,1)"},"error_x":{"color":"rgba(229,196,148,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["T5139A1","T4919A1","T656A","T771A","T866D","T5430A1","T552G","T981A","T4603A1","T672A"],"y":[2.439,2.922,2.983,3.072,3.404,3.846,4.396,4.789,5.055,5.815],"text":["Expression:  2.439","Expression:  2.922","Expression:  2.983","Expression:  3.072","Expression:  3.404","Expression:  3.846","Expression:  4.396","Expression:  4.789","Expression:  5.055","Expression:  5.815"],"type":"bar","name":"Rectosigmoid Adenocarcinoma","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>Oncomine_box_plot(box)</code></pre>
+<div id="htmlwidget-2" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"visdat":{"12d316ed09ee2":["function () ","plotlyVisDat"]},"cur_data":"12d316ed09ee2","attrs":{"12d316ed09ee2":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Box Plot","xaxis":{"domain":[0,1],"automargin":true,"title":"Legend Value","type":"category","categoryorder":"array","categoryarray":["Cecum Adenocarcinoma","Colon","Colon Adenocarcinoma","Colon Mucinous Adenocarcinoma","No value","Rectal Adenocarcinoma","Rectal Mucinous Adenocarcinoma","Rectosigmoid Adenocarcinoma"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Expression value"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"fillcolor":"rgba(102,194,165,0.5)","x":["Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma","Cecum Adenocarcinoma"],"y":[2.732,2.889,2.944,3.397,3.453,4.437,4.492,4.597,4.623,4.724,4.801,5.183,5.315,5.407,5.897,5.981,6.215],"type":"box","name":"Cecum Adenocarcinoma","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(252,141,98,0.5)","x":["Colon","Colon","Colon","Colon","Colon"],"y":[0.188,0.315,0.533,1.02,1.16],"type":"box","name":"Colon","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(141,160,203,0.5)","x":["Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma","Colon Adenocarcinoma"],"y":[1.644,2.586,2.747,3.043,3.377,3.553,3.634,3.748,3.838,3.877,3.927,3.931,3.982,4.052,4.061,4.161,4.168,4.173,4.188,4.294,4.395,4.441,4.478,4.566,4.761,4.81,4.857,4.956,5.044,5.077,5.172,5.241,5.243,5.286,5.33,5.614,5.638,5.674,5.819,5.852,5.959],"type":"box","name":"Colon Adenocarcinoma","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(231,138,195,0.5)","x":["Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma","Colon Mucinous Adenocarcinoma"],"y":[3.001,3.836,4.035,4.225,4.389,4.776,4.838,4.872,5.087,5.304,5.676,5.973,6.231],"type":"box","name":"Colon Mucinous Adenocarcinoma","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"line":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(166,216,84,0.5)","x":["No value","No value","No value","No value","No value","No value","No value"],"y":[3.509,4.205,4.407,4.575,5.109,5.867,6.11],"type":"box","name":"No value","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"line":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(255,217,47,0.5)","x":["Rectal Adenocarcinoma","Rectal Adenocarcinoma","Rectal Adenocarcinoma","Rectal Adenocarcinoma","Rectal Adenocarcinoma","Rectal Adenocarcinoma","Rectal Adenocarcinoma","Rectal Adenocarcinoma"],"y":[2.231,2.638,3.811,4.441,4.584,4.669,5.346,5.547],"type":"box","name":"Rectal Adenocarcinoma","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"line":{"color":"rgba(255,217,47,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(229,196,148,0.5)","x":["Rectal Mucinous Adenocarcinoma","Rectal Mucinous Adenocarcinoma","Rectal Mucinous Adenocarcinoma","Rectal Mucinous Adenocarcinoma"],"y":[3.798,4.233,4.36,4.784],"type":"box","name":"Rectal Mucinous Adenocarcinoma","marker":{"color":"rgba(229,196,148,1)","line":{"color":"rgba(229,196,148,1)"}},"line":{"color":"rgba(229,196,148,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(179,179,179,0.5)","x":["Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma","Rectosigmoid Adenocarcinoma"],"y":[2.439,2.922,2.983,3.072,3.404,3.846,4.396,4.789,5.055,5.815],"type":"box","name":"Rectosigmoid Adenocarcinoma","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"line":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre><code>
+当然我们也可以用ggplot2作图
+
+
+```r
+library(ggplot2) 
+ggplot(box,aes(`Cancer Type`,`Expression value`,color=`Cancer Type`))+
+  geom_boxplot()+
+  theme_bw(base_size = 12)+
+  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=.5))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>

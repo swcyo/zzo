@@ -1,19 +1,19 @@
-logoText = "Zzo"
+logoText = "Song Ou-Yang"
 logoType = "short" # long, short
-description = "The Zzo theme for Hugo example site."
+description = "Song Ou-Yang's site"
 custom_css = []
 custom_js = []
 useFaviconGenerator = true # https://www.favicon-generator.org/
 meta_image = ""
 themecolor = ""
 
-themeOptions = ["dark", "light", "hacker", "solarized", "kimbie"]
+themeOptions = ["light", "dark", "hacker", "solarized", "kimbie"]
 notAllowedTypesInHome = ["contact", "talks", "about", "showcase", "publication", "presentation", "resume"]
 notAllowedTypesInHomeSidebar = ["about", "archive", "showcase", "publication", "presentation", "resume"]
 notAllowedTypesInArchive = ["about", "talks", "showcase", "publication", "presentation", "resume"]
 notAllowedTypesInHomeFeed = ["about", "archive", "contact", "talks", "showcase", "publication", "presentation", "resume", "gallery"]
 
-viewportSize = "normal" # widest, wider, wide, normal, narrow
+viewportSize = "wide" # widest, wider, wide, normal, narrow
 enableUiAnimation = true
 hideSingleContentsWhenJSDisabled = false
 enablePinnedPosts = true
@@ -60,14 +60,14 @@ publicationIcon = "📚"
 typeIcon = "🎯"
 
 # whoami
-myname = "zzossig"
-email = "zzossig@gmail.com"
-whoami = "Web Developer"
+myname = "欧阳松"
+email = "ouyangsong@shzu.edu.cn"
+whoami = "在站博士后/副主任医师"
 bioImageUrl = ""
-useGravatar = false
-location = "Seoul, Korea"
-organization = "Hugo"
-link = "https://zzossig.io/ko"
+useGravatar = false ## 设置为false会显示我的头像
+location = "新疆, 石河子"
+organization = "石河子大学医学院第一附属医院"
+link = "https://swcyo.rbind.io/"
 
 # sidebar
 enableBio = true
@@ -79,13 +79,13 @@ enableSidebarCategories = true
 enableHomeSidebarTitles = true
 enableListSidebarTitles = true
 enableToc = true
-hideToc = false
+hideToc = true
 tocFolding = true
-tocPosition = "inner" # inner, outer
+tocPosition = "outer" # inner, outer
 enableTocSwitch = true
 itemsPerCategory = 5
 sidebarPosition = "right"
-tocLevels = ["h2", "h3", "h4"]
+tocLevels = ["h2", "h3", "h4","h5"]
 enableSidebarPostsByOrder = false
 
 # footer
@@ -97,118 +97,42 @@ enableThemeChange = true
 
 # service
 googleTagManager = "" # GTM-XXXXXX
-baiduAnalytics = ""
-enableBusuanzi = false
+baiduAnalytics = "af43714f0d2bda327dfa276339b9db25"
+enableBusuanzi = true
 busuanziSiteUV = true
 busuanziSitePV = true
 busuanziPagePV = true
 
-# rss
-updatePeriod = "" # Possible values: 'hourly', 'daily', 'weekly', 'monthly', or 'yearly'.
-updateFrequency = ""
-fullContents = false
-
-# comment
-enableComment = true
-disqus_shortname = ""
-commento = false
-
-[telegram]
-  enable = false
-  siteId = ""
-  dataLimit = 5
-
-[gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
-  owner = ""              # Your GitHub ID
-  repo = ""               # The repo to store comments
-  clientId = ""           # Your client ID
-  clientSecret = ""       # Your client secret
-
-[utterances]       # https://utteranc.es/
-  owner = ""              # Your GitHub ID
-  repo = ""               # The repo to store comments
-
-[gitalk]           # Gitalk is a comment system based on GitHub issues. see https://github.com/gitalk/gitalk
-  owner = ""              # Your GitHub ID
-  repo = ""               # The repo to store comments
-  clientId = ""           # Your client ID
-  clientSecret = ""       # Your client secret
-
-# Valine.
-# You can get your appid and appkey from https://leancloud.cn
-# more info please open https://valine.js.org
-[valine]
-  enable = false
-  appId = '你的appId'
-  appKey = '你的appKey'
-  notify = false  # mail notifier , https://github.com/xCss/Valine/wiki
-  verify = false # Verification code
-  avatar = 'mm' 
-  placeholder = '说点什么吧...'
-  visitor = false
-
-[changyan]
-  changyanAppid = ""        # Changyan app id             # 畅言
-  changyanAppkey = ""       # Changyan app key
-
-[livere]
-  livereUID = ""            # LiveRe UID                  # 来必力
-
-# Isso: https://posativ.org/isso/
-[isso]
-  enable = false
-  scriptSrc = "" # "https://isso.example.com/js/embed.min.js"
-  dataAttrs = "" # "data-isso='https://isso.example.com' data-isso-require-author='true'"
 
 [socialOptions]
-  email = "mailto:your@email.com"
-  phone = ""
-  facebook = "http://example.org/"
-  twitter = "http://example.org/"
-  github = "https://github.com/zzossig/hugo-theme-zzo"
-  stack-overflow = ""
-  instagram = ""
-  google-plus = ""
-  youtube = ""
-  medium = ""
-  tumblr = ""
-  linkedin = ""
-  pinterest = ""
-  stack-exchange = ""
-  telegram = ""
-  steam = ""
-  weibo = ""
-  douban = ""
-  csdn = ""
-  gitlab = ""
-  mastodon = ""
-  jianshu = ""
-  zhihu = ""
-  signal = ""
-  whatsapp = ""
-  matrix = ""
-  xmpp = ""
-  dev-to = ""
-  gitea = ""
-  google-scholar = ""
+  email = "mailto://ouyangsong@shzu.edu.cn"
+  github = "https://github.com/swcyo/Rblog"
+  weibo = "https://weibo.com/swcyoyond"
+  jianshu = "https://www.jianshu.com/u/c23f6285abcc"
+  zhihu = "https://www.zhihu.com/people/swcyo"
+  google-scholar = "https://scholar.google.com/citations?hl=zh-CN&pli=1&user=eTN286IAAAAJ"
 
 [donationOptions]
   enable = false
   alipay = "" 
-  wechat = ""
+  wechat = "swcyoyond"
   paypal = ""
   patreon = ""
 
 # possible share name: ["facebook","twitter", "reddit", "linkedin", "tumblr", "weibo", "douban", "line", "pocket", "feedly", "hatena", "pinterest", "delicious", "google"]
 [[share]]
-  name = "facebook"
-  username = ""
-[[share]]
-  name = "twitter"
+  name = "weibo"
+  username = "swcyoyond"
 
 [[footerLinks]]
-  name = ""
-  link = ""
+  name = "石河子大学"
+  link = "http://www.shzu.edu.cn/"
 [[footerLinks]]
-  name = ""
-  link = ""
+  name = "石河子大学医学院第一附属医院"
+  link = "http://www.sdyfy.com.cn/"
+[[footerLinks]]
+  name = "我的百度学术"
+  link = "https://xueshu.baidu.com/scholarID/CN-BP74VAPJ"
+[[footerLinks]]
+  name = "我的ORCID"
+  link = "https://orcid.org/0000-0001-7962-2811"

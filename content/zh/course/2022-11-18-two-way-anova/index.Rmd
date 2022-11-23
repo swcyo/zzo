@@ -1,0 +1,353 @@
+---
+title: 使用rstatix包进行双因素方差分析，Two-way ANOVA
+author: 欧阳松
+date: '2022-11-18'
+slug: two-way-anova
+categories:
+  - 双因素方差分析
+tags:
+  - 双因素方差分析
+  - 多个样本两两比较
+description: ~
+hideToc: yes
+enableToc: yes
+enableTocContent: no
+tocFolding: no
+tocPosition: inner
+tocLevels:
+  - h2
+  - h3
+  - h4
+  - h5  
+series:
+  - ~
+image: ~
+---
+
+之前介绍了很多种进行单因素的方差分析的方法，今天继续介绍使用**rstatix**包进行双因素的方差分析。
+
+### **数据准备**
+
+我们使用**datarium**包的jobsatisfaction数据集进行演示，该数据包含按性别和教育水平组织的工作满意度分数。
+
+在这项研究中，一项研究想要评估工作满意度分数之间是否存在显著的双向交互作用。当一个自变量对结果变量的影响取决于其他自变量的水平时，就会发生交互作用效应。如果交互作用效应不存在，则可以报告主效应。
+
+#### 加载数据：
+
+    # install.packages("datarium") 
+    data("jobsatisfaction", package = "datarium") 
+
+```{r echo=FALSE}
+data("jobsatisfaction", package = "datarium")
+library(DT)
+datatable(jobsatisfaction,rownames = 1,caption = "表1: jobsatisfaction数据演示",extensions = 'Buttons',options = list(dom='Bfrtip',buttons=c('copy', 'csv', 'excel', 'print', 'pdf')),class = 'CSS')
+```
+
+#### 按组随机检查一行
+
+我们可以使用**rstatix**包的`sample_n_by()`函数随机显示性别列中的教育水平的一行数据。
+
+    library(rstatix)
+    jobsatisfaction %>% sample_n_by(gender, education_level, size = 1)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(rstatix)
+datatable(jobsatisfaction %>% sample_n_by(gender, education_level, size = 1),rownames = 1,caption="按组随机显示1行")
+```
+
+> 在本例子中，"education_level"的影响是我们的**焦点变量**，这是我们的主要关注点。我们认为，"education_level"的影响将取决于另一个因素，即"性别"，它被称为**调节变量**。
+
+### **汇总统计**
+
+计算各组中score的均数和标准差：
+
+    jobsatisfaction %>%
+      group_by(gender, education_level) %>%
+      get_summary_stats(score, type = "mean_sd")
+
+```{r echo=FALSE}
+datatable(jobsatisfaction %>%
+  group_by(gender, education_level) %>%
+  get_summary_stats(score, type = "mean_sd"),rownames = 1,caption="计算各组的均数和标准差")
+```
+
+### **可视化**
+
+按性别分组，按教育程度着色，创建分数的箱形图，见Figure \@ref(fig:box1)所示。
+
+```{r box1, fig.align='center', fig.cap="按性别分组，按教育程度找色", message=FALSE, warning=FALSE}
+library(ggpubr)
+bxp <- ggboxplot(
+  jobsatisfaction, x = "gender", y = "score",
+  color = "education_level", palette = "aaas",add = 'jitter',
+  )
+bxp
+```
+
+我们也可以按性别分面显示，见Figure \@ref(fig:facet)所示。
+
+```{r facet,fig.align='center', fig.cap="按性别分面，按教育程度找色", message=FALSE, warning=FALSE}
+facet<-ggboxplot(jobsatisfaction, 
+          x = "education_level", y = "score",
+          color = "education_level", palette = "aaas",add = 'jitter',
+          facet.by = "gender",
+          ggtheme = theme_bw(base_size = 12)
+          )
+facet
+```
+
+### 检查假设
+
+#### **异常值**
+
+识别每个单元设计中的异常值：
+
+    jobsatisfaction %>%
+      group_by(gender, education_level) %>%
+      identify_outliers(score)
+
+> There were no extreme outliers.
+>
+> 没有极端的异常值。
+
+#### **正态性假设（二选一）**
+
+##### 1、通过分析模型残差来检查正态性假设。
+
+可以使用QQ图（Figure \@ref(fig:qq)）和Shapiro-Wilk正态性检验显示。
+
+```{r qq,fig.align='center',fig.cap="残差QQ图"}
+# 构建线性模型
+model  <- lm(score ~ gender*education_level,
+             data = jobsatisfaction)
+# 绘制残差QQ图
+ggqqplot(residuals(model))
+```
+
+    # Shapiro-Wilk正态性检验
+    shapiro_test(residuals(model))
+
+```{r echo=FALSE}
+datatable(shapiro_test(residuals(model)),rownames = 1,caption = "Shapiro-Wilk正态性检验") %>% 
+  formatRound(c('statistic','p.value'),digits = 3)
+```
+
+在 QQ 图中，由于所有点都大致沿参考线落下，我们可以假设正态性。
+
+这一结论得到了Shapiro-Wilk检验的支持。p 值不显著 （p = 0.13），因此我们可以假设正态性。
+
+##### 2、按组检查正态性假设。
+
+计算每个因子水平组合的Shapiro-Wilk检验：
+
+    jobsatisfaction %>%
+      group_by(gender, education_level) %>%
+      shapiro_test(score)
+
+```{r echo=FALSE}
+datatable(jobsatisfaction %>%
+  group_by(gender, education_level) %>%
+  shapiro_test(score),rownames = 1,caption = "每个组合的Shapiro-Wilk检验") %>% 
+  formatRound(c('statistic','p'),digits = 3)
+```
+
+结果可见，Shapiro-Wilk的正态性检验评估，每个分数的评分均呈正态分布（p \> 0.05）。
+
+同样地，可以为每个结果创建 QQ 图：
+
+```{r}
+ggqqplot(jobsatisfaction, "score", ggtheme = theme_bw()) +
+  facet_grid(gender ~ education_level)
+```
+
+对于每个结果，所有点都大致沿参考线落下。因此，我们可以假设数据的正态性。
+
+#### **方差齐性假设**
+
+可以使用 Levene 检验进行方差齐性检验：
+
+    jobsatisfaction %>% levene_test(score ~ gender*education_level)
+
+```{r echo=FALSE}
+datatable(jobsatisfaction %>% 
+            levene_test(score ~ gender*education_level),rownames = 1,caption = "Levene方差齐性检验") %>% 
+  formatRound(c('statistic','p'),digits = 3)
+```
+
+Levene检验不显著（p \> 0.05）。因此，我们可以假设不同组中方差的同质性。
+
+### **计算**
+
+在下面的 R 代码中，星号表示每个变量（以及所有低阶交互作用）的交互作用效应和主效应。
+
+    res.aov <- jobsatisfaction %>% anova_test(score ~ gender * education_level)
+    res.aov
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+res.aov <- jobsatisfaction %>% anova_test(score ~ gender * education_level)
+datatable(res.aov,rownames = 1,caption = "组间整体的差异性检验")
+```
+
+在工作满意度得分方面，性别与教育水平之间存在统计学上的显着交互作用，*F（2，52）= 7.34，p = 0.002*。
+
+### **事后检查**
+
+**显著的双向交互作用**表明，一个因素（例如，education_level）对结果变量（例如，工作满意度得分）的影响取决于另一个因素（例如，性别）的水平（反之亦然）。因此，您可以将重要的双向交互分解为：
+
+-   **简单的主效应**：在第二个变量的每个级别上运行第一个变量的单向模型，
+
+-   简单成对比较：如果简单主效应显著，请运行多个**成对比较**以确定哪些组不同。
+
+对于不显著的**双向交互作用**，需要确定方差分析输出中是否有任何具有统计显著性**主效应**。一个显著的主效应可以通过组之间的成对比较来跟进。
+
+#### **重要的双向交互程序**
+
+##### **计算简单的主效应**
+
+因此，在我们的示例中，您可以调查变量在每个级别的影响或调查变量在每个级别的影响。
+
+在这里，我们将在每个级别运行单因素方差分析 。
+
+请注意：
+
+-   如果满足了双向方差分析的假设（例如方差具有齐性），则最好使用总体误差项（来自双向方差分析）作为单因素方差分析模型中的输入。
+
+-   如果存在任何统计上显着的差异，这将更容易检测到它们（Keppel & Wickens, 2004; Maxwell & Delaney, 2004）。
+
+-   如果不具有方差齐性，则可以考虑使用单独的误差项运行单独的单因子方差分析。
+
+在下面的 R 代码中，我们将按性别对数据进行分组，并分析教育水平对工作满意度分数的**简单主要影响**。该参数用于指定方差分析模型，从该模型计算平方和自由度的合并误差。
+
+    # Group the data by gender and fit  anova
+    model <- lm(score ~ gender * education_level, data = jobsatisfaction)
+    jobsatisfaction %>%
+      group_by(gender) %>%
+      anova_test(score ~ education_level, error = model)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+model <- lm(score ~ gender * education_level, data = jobsatisfaction)
+datatable(jobsatisfaction %>%
+  group_by(gender) %>%
+  anova_test(score ~ education_level, error = model),rownames = 1)
+```
+
+"education_level"对工作满意度得分的简单主效应对男性和女性均有统计学意义（p \< 0.0001）。
+
+换句话说，受过教育到学校、学院或大学的**男性**之间的平均工作满意度得分存在统计学上的显着差异，F（2， 52） = 132，p \< 0.0001。同样的结论也适用于**女性**，F（2， 52） = 62.8，p \< 0.0001。
+
+请注意，简单主效应分析的统计显著性在 Bonferroni 调整的 alpha 水平 0.025 时被接受。这对应于您声明的当前水平（即 p \< 0.05）除以您正在计算的简单主效应的数量（即 2）。
+
+##### **计算成对比较**
+
+统计显著的简单主效应可以通过**多个成对比较进行，**以确定哪些组均值不同。现在，我们将通过在不同组之间执行多个成对比较。
+
+您可以使用 Bonferroni 校正平差运行和解释所有可能的成对比较。这可以使用函数 **rstatix**包轻松完成，需要安装**emmeans**包，使用`emmeans_test()`函数。Emmeans 代表**估计的边际**均值（又称最小二乘均值或校正均值）。
+
+**按级别比较不同教育水平的分数**：
+
+    # pairwise comparisons
+    library(emmeans)
+    pwc <- jobsatisfaction %>% 
+      group_by(gender) %>%
+      emmeans_test(score ~ education_level, p.adjust.method = "bonferroni") 
+    pwc
+
+```{r echo=FALSE}
+library(emmeans)
+pwc <- jobsatisfaction %>% 
+  group_by(gender) %>%
+  emmeans_test(score ~ education_level, p.adjust.method = "bonferroni") 
+datatable(pwc,rownames = 1) %>% 
+   formatRound(c('statistic','p',"p.adj"),digits = 3)
+```
+
+结果显示，男性和女性各组的工作满意度得分差异均有统计学意义（p \< 0.05）。
+
+#### **非显著双向交互的程序**
+
+##### **检查主效应**
+
+如果双向交互作用在统计意义上不显著，则需要查阅方差分析输出中两个变量（性别和教育程度）的主效应。
+
+    res.aov
+
+```{r echo=FALSE}
+datatable(res.aov,rownames = 1)
+```
+
+在我们的示例中，education_level（F（2， 52） = 187.89，p \< 0.0001）对工作满意度得分的主效应具有统计学意义。然而，性别的主要影响并不显著，F（1，52）= 0.74，p = 0.39。
+
+##### **计算成对比较**
+
+在教育水平组之间进行成对比较，以确定哪些组存在显著差异。应用bonferroni法进行校正。此分析可以仅使用 R 基本函数`pairwise_t_test()`或使用`emmeans_test()`函数来完成。
+
+-   成对 t 检验：
+
+```{=html}
+<!-- -->
+```
+    jobsatisfaction %>%
+      pairwise_t_test(
+        score ~ education_level, 
+        p.adjust.method = "bonferroni"
+        )
+
+```{r echo=FALSE}
+datatable(jobsatisfaction %>%
+  pairwise_t_test(
+    score ~ education_level, 
+    p.adjust.method = "bonferroni"
+    )) %>% 
+   formatRound(c('p',"p.adj"),digits = 3)
+```
+
+结果可见，所有成对差异均有统计学意义（p \< 0.05）。
+
+-   使用Emmeans检验的成对比较。需要指定整体模型，从中计算总体自由度。这样可以更轻松地检测任何具有统计意义的差异（如果存在）。
+
+```{=html}
+<!-- -->
+```
+    model <- lm(score ~ gender * education_level, data = jobsatisfaction)
+    jobsatisfaction %>% 
+      emmeans_test(
+        score ~ education_level, p.adjust.method = "bonferroni",
+        model = model
+        )
+
+```{r echo=FALSE}
+model <- lm(score ~ gender * education_level, data = jobsatisfaction)
+datatable(jobsatisfaction %>% 
+  emmeans_test(
+    score ~ education_level, p.adjust.method = "bonferroni",
+    model = model
+    ),rownames = 1) %>% 
+   formatRound(c('statistic','p',"p.adj"),digits = 3)
+```
+
+### **可视化报告**
+
+进行双向方差分析，以检查性别和教育水平对工作满意度得分的影响。
+
+进行残差分析以检验双向方差分析的假设。异常值采用箱形图法评估，正态性使用Shapiro-Wilk\'s正态性检验评估，方差的均匀性由Levene检验评估。
+
+没有极端异常值，残差呈正态分布（p \> 0.05），方差存在齐性（p \> 0.05）。
+
+性别与教育水平在工作满意度得分方面存在统计学上的显着相互作用。`F(2, 52) = 7.33, p = 0.0016, eta2[g] = 0.22`
+
+因此，对教育水平的简单主效应进行了分析，并接受了邦弗朗尼调整的统计显著性。受过学校、学院或大学教育的男性（）和女性（）的平均"工作满意度"得分存在统计学上的显着差异。`F(2, 52) = 132, p < 0.0001F(2, 52) = 62.8, p < 0.0001`
+
+所有成对比较均按组织的不同组进行分析。男性和女性各组的工作满意度得分差异均有统计学意义（p \< 0.05）。
+
+```{r}
+# 可视化: 带有p值的箱示图
+pwc <- pwc %>% add_xy_position(x = "gender")
+bxp +
+  stat_pvalue_manual(pwc) +
+  labs(
+    subtitle = get_test_label(res.aov, detailed = TRUE),
+    caption = get_pwc_label(pwc)
+    )
+```
+
+学费了吗

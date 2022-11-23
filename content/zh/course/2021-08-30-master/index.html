@@ -1,0 +1,940 @@
+---
+title: 我的硕士论文电子版最后一页的代码
+author: 欧阳松
+date: '2021-08-30'
+slug: 'lastpageformymasterthesis'
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/htmlwidgets/htmlwidgets.js"></script>
+<link href="{{< blogdown/postref >}}index_files/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/datatables-binding/datatables.js"></script>
+<script src="{{< blogdown/postref >}}index_files/jquery/jquery-3.6.0.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="{{< blogdown/postref >}}index_files/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/dt-core/js/jquery.dataTables.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/crosstalk/js/crosstalk.min.js"></script>
+
+
+<p>之前用bookdown复现了我的硕士论文，其中重新进行了统计计算，地址是<a href="https://swcyo.github.io/masterthesis" class="uri">https://swcyo.github.io/masterthesis</a>，现分享一下方法：</p>
+<div id="原始临床数据表" class="section level1">
+<h1>原始临床数据表</h1>
+<p>以前的论文结果是用<strong>SPSS</strong>计算的，很方便。但是本部分内容尝试由R语言生成，原始数据在知网和万网上都可以看到，数据见下表。</p>
+<pre><code>data&lt;-read.csv(&quot;/Users/mac/Documents/data.csv&quot;)
+data&lt;-as.data.frame(data)
+library(dplyr)
+## 将位置的数字1和2改为左和右
+data&lt;-data %&gt;%
+       mutate(location=factor(location,labels = c(&quot;Left&quot;,&quot;Right&quot;)))</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[[48,70,25,59,64,52,52,47,39,43,50,42,38,48,51,46,62,28,60,61,49,49,48,35,56,59,45],[172,162,172,180,158,160,158,170,162,173,170,165,163,177,169,176,180,172,168,172,155,163,178,172,162,178,168],[1.72,1.62,1.72,1.8,1.58,1.6,1.58,1.7,1.62,1.73,1.7,1.65,1.63,1.77,1.69,1.76,1.8,1.72,1.68,1.72,1.55,1.63,1.78,1.72,1.62,1.78,1.68],[71,56,66,75,60,66,56,86,69,70,72,68,65,78,72,90,68,76,70,65,58,54,68,64,65,73,60],[23.99945917,21.33821064,22.30935641,23.14814815,24.03460984,25.78125,22.43230252,29.75778547,26.29172382,23.38868656,24.91349481,24.97704316,24.4646016,24.89706023,25.20920136,29.05475207,20.98765432,25.68956193,24.8015873,21.97133586,24.14151925,20.32443826,21.46193662,21.63331531,24.76756592,23.0400202,21.2585034],["Left","Right","Right","Right","Right","Right","Right","Left","Right","Right","Left","Left","Right","Left","Left","Right","Right","Right","Left","Left","Right","Left","Left","Right","Left","Left","Left"],[2.1,1.3,1,0.9,0.8,1.6,1,1.4,1.3,1,1.2,1.4,1.6,1.2,2.1,1.7,1.5,1.2,1.3,0.9,1,0.9,1.3,1.5,1.7,1.3,1.5],[65,50,60,55,65,75,45,80,55,45,70,60,45,50,45,120,110,100,95,90,75,80,65,65,83,60,55],[15,35,30,5,35,5,25,30,25,20,15,25,30,20,10,15,20,10,25,20,25,15,15,20,5,10,15],[2,2,1,2,2,1,2,2,2,2,1,2,2,2,1,2,2,1,1,1,2,1,2,1,2,1,1],[30,10,17,20,25,16,23,20,5,10,15,17,22,17,20,25,30,20,15,15,18,10,15,16,25,25,30],[6,5,6,7,6,6,7,6,6,4,4,4,5,6,6,6,5,5,5,4,5,6,5,4,5,5,5],[7,6,7,8,7,7,8,7,7,5,5,5,6,7,7,8,7,6,6,5,6,7,5,6,6,7,8],[85,84,80,85,90,88,87,84,88,90,80,85,85,80,79,90,92,90,83,91,88,90,93,82,92,81,90],[85,80,76,85,88,85,85,80,85,90,80,85,82,76,76,88,85,88,80,85,88,89,90,80,92,80,89],["LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LUL","LESS","LESS","LESS","LESS","LESS","LESS","LESS","LESS","LESS","LESS","LESS","LESS"]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th>age<\/th>\n      <th>height.cm<\/th>\n      <th>height.m<\/th>\n      <th>weight<\/th>\n      <th>BMI<\/th>\n      <th>location<\/th>\n      <th>size<\/th>\n      <th>operating.time<\/th>\n      <th>bleeding.V<\/th>\n      <th>eat.time<\/th>\n      <th>draw.V<\/th>\n      <th>drae.time<\/th>\n      <th>hospital.time<\/th>\n      <th>satificatiion<\/th>\n      <th>cosmics<\/th>\n      <th>group<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[0,1,2,3,4,6,7,8,9,10,11,12,13,14]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<hr />
+<div id="数据总结" class="section level2">
+<h2>数据总结</h2>
+<p>使用R语言的<code>epiDisplay</code>包的<code>summ(data)</code>函数可以很快的显示均数，标准差，最大值和最小值，注意，这里是所有的患者，没有算上分组，还有就是location（结石部位）只有左和右，属于因子，只统计数字即可，但是这个包当成数值计算了,用自带的<code>summary(data)</code>函数可以统计因子的个数，但是又不能计算标准差，还有一个psych的<code>describe(data)函数</code>也很优秀，当然还有很多包都可以一次性统计所有结果，怎么都比SPSS要好得多。</p>
+<p>这里吐槽一下自己的硕士论文，结果一中的研究对象里面，我把A（单孔腹腔镜组）和B（标准腹腔镜）两组的年龄、BMI和结石大小数据搞反了，不过统计结果是正确的，毕竟我是正正规规用SPSS做的结果，不是那种瞎编的数据，但还是不得不骂骂自己当时脑子混乱了，好在后面的数据都正确。</p>
+<div id="所有数据汇总统计" class="section level3">
+<h3>所有数据汇总统计：</h3>
+<pre><code>library(epiDisplay)
+summ(data)</code></pre>
+<p>使用<strong>epiDisplay</strong>的<code>summ</code>函数可以一步进行统计，结果见下表：</p>
+<pre><code>## 载入需要的程辑包：foreign</code></pre>
+<pre><code>## 载入需要的程辑包：survival</code></pre>
+<pre><code>## 载入需要的程辑包：MASS</code></pre>
+<pre><code>## 
+## 载入程辑包：&#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre><code>## 载入需要的程辑包：nnet</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var. name</th>
+<th align="left">obs.</th>
+<th align="left">mean</th>
+<th align="left">median</th>
+<th align="left">s.d.</th>
+<th align="left">min.</th>
+<th align="left">max.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">age</td>
+<td align="left">27</td>
+<td align="left">49.11</td>
+<td align="left">49</td>
+<td align="left">10.6</td>
+<td align="left">25</td>
+<td align="left">70</td>
+</tr>
+<tr class="even">
+<td align="left">height.cm</td>
+<td align="left">27</td>
+<td align="left">168.7</td>
+<td align="left">170</td>
+<td align="left">7.16</td>
+<td align="left">155</td>
+<td align="left">180</td>
+</tr>
+<tr class="odd">
+<td align="left">height.m</td>
+<td align="left">27</td>
+<td align="left">1.69</td>
+<td align="left">1.7</td>
+<td align="left">0.07</td>
+<td align="left">1.55</td>
+<td align="left">1.8</td>
+</tr>
+<tr class="even">
+<td align="left">weight</td>
+<td align="left">27</td>
+<td align="left">68.19</td>
+<td align="left">68</td>
+<td align="left">8.45</td>
+<td align="left">54</td>
+<td align="left">90</td>
+</tr>
+<tr class="odd">
+<td align="left">BMI</td>
+<td align="left">27</td>
+<td align="left">23.93</td>
+<td align="left">24.03</td>
+<td align="left">2.29</td>
+<td align="left">20.32</td>
+<td align="left">29.76</td>
+</tr>
+<tr class="even">
+<td align="left">location</td>
+<td align="left">27</td>
+<td align="left">1.519</td>
+<td align="left">2</td>
+<td align="left">0.509</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">size</td>
+<td align="left">27</td>
+<td align="left">1.32</td>
+<td align="left">1.3</td>
+<td align="left">0.34</td>
+<td align="left">0.8</td>
+<td align="left">2.1</td>
+</tr>
+<tr class="even">
+<td align="left">operating.time</td>
+<td align="left">27</td>
+<td align="left">69</td>
+<td align="left">65</td>
+<td align="left">20.37</td>
+<td align="left">45</td>
+<td align="left">120</td>
+</tr>
+<tr class="odd">
+<td align="left">bleeding.V</td>
+<td align="left">27</td>
+<td align="left">19.26</td>
+<td align="left">20</td>
+<td align="left">8.74</td>
+<td align="left">5</td>
+<td align="left">35</td>
+</tr>
+<tr class="even">
+<td align="left">eat.time</td>
+<td align="left">27</td>
+<td align="left">1.59</td>
+<td align="left">2</td>
+<td align="left">0.5</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">draw.V</td>
+<td align="left">27</td>
+<td align="left">18.93</td>
+<td align="left">18</td>
+<td align="left">6.41</td>
+<td align="left">5</td>
+<td align="left">30</td>
+</tr>
+<tr class="even">
+<td align="left">drae.time</td>
+<td align="left">27</td>
+<td align="left">5.33</td>
+<td align="left">5</td>
+<td align="left">0.88</td>
+<td align="left">4</td>
+<td align="left">7</td>
+</tr>
+<tr class="odd">
+<td align="left">hospital.time</td>
+<td align="left">27</td>
+<td align="left">6.52</td>
+<td align="left">7</td>
+<td align="left">0.98</td>
+<td align="left">5</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">satificatiion</td>
+<td align="left">27</td>
+<td align="left">86.37</td>
+<td align="left">87</td>
+<td align="left">4.25</td>
+<td align="left">79</td>
+<td align="left">93</td>
+</tr>
+<tr class="odd">
+<td align="left">cosmics</td>
+<td align="left">27</td>
+<td align="left">84.15</td>
+<td align="left">85</td>
+<td align="left">4.6</td>
+<td align="left">76</td>
+<td align="left">92</td>
+</tr>
+<tr class="even">
+<td align="left">group</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="分组数据统计" class="section level3">
+<h3>分组数据统计：</h3>
+<p>但是我们其实需要的是各组的汇总数据，因此需要把两组的数据提出来汇总，我们可以使用<code>subset</code>函数提出分组的数据，然后分别统计，这里附录一下代码吧。。。</p>
+</div>
+<div id="标准后腹腔镜组的数据统计汇总" class="section level3">
+<h3>标准后腹腔镜组的数据统计汇总：</h3>
+<pre><code>lul&lt;-subset(data,group==&quot;LUL&quot;) # 提取标准腹腔镜组数据
+summ(lul)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var. name</th>
+<th align="left">obs.</th>
+<th align="left">mean</th>
+<th align="left">median</th>
+<th align="left">s.d.</th>
+<th align="left">min.</th>
+<th align="left">max.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">age</td>
+<td align="left">15</td>
+<td align="left">48.53</td>
+<td align="left">48</td>
+<td align="left">10.93</td>
+<td align="left">25</td>
+<td align="left">70</td>
+</tr>
+<tr class="even">
+<td align="left">height.cm</td>
+<td align="left">15</td>
+<td align="left">167.4</td>
+<td align="left">169</td>
+<td align="left">6.84</td>
+<td align="left">158</td>
+<td align="left">180</td>
+</tr>
+<tr class="odd">
+<td align="left">height.m</td>
+<td align="left">15</td>
+<td align="left">1.67</td>
+<td align="left">1.69</td>
+<td align="left">0.07</td>
+<td align="left">1.58</td>
+<td align="left">1.8</td>
+</tr>
+<tr class="even">
+<td align="left">weight</td>
+<td align="left">15</td>
+<td align="left">68.67</td>
+<td align="left">69</td>
+<td align="left">7.93</td>
+<td align="left">56</td>
+<td align="left">86</td>
+</tr>
+<tr class="odd">
+<td align="left">BMI</td>
+<td align="left">15</td>
+<td align="left">24.46</td>
+<td align="left">24.46</td>
+<td align="left">2</td>
+<td align="left">21.34</td>
+<td align="left">29.76</td>
+</tr>
+<tr class="even">
+<td align="left">location</td>
+<td align="left">15</td>
+<td align="left">1.6</td>
+<td align="left">2</td>
+<td align="left">0.507</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">size</td>
+<td align="left">15</td>
+<td align="left">1.33</td>
+<td align="left">1.3</td>
+<td align="left">0.39</td>
+<td align="left">0.8</td>
+<td align="left">2.1</td>
+</tr>
+<tr class="even">
+<td align="left">operating.time</td>
+<td align="left">15</td>
+<td align="left">57.67</td>
+<td align="left">55</td>
+<td align="left">11.47</td>
+<td align="left">45</td>
+<td align="left">80</td>
+</tr>
+<tr class="odd">
+<td align="left">bleeding.V</td>
+<td align="left">15</td>
+<td align="left">21.67</td>
+<td align="left">25</td>
+<td align="left">9.94</td>
+<td align="left">5</td>
+<td align="left">35</td>
+</tr>
+<tr class="even">
+<td align="left">eat.time</td>
+<td align="left">15</td>
+<td align="left">1.73</td>
+<td align="left">2</td>
+<td align="left">0.46</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">draw.V</td>
+<td align="left">15</td>
+<td align="left">17.8</td>
+<td align="left">17</td>
+<td align="left">6.32</td>
+<td align="left">5</td>
+<td align="left">30</td>
+</tr>
+<tr class="even">
+<td align="left">drae.time</td>
+<td align="left">15</td>
+<td align="left">5.6</td>
+<td align="left">6</td>
+<td align="left">0.99</td>
+<td align="left">4</td>
+<td align="left">7</td>
+</tr>
+<tr class="odd">
+<td align="left">hospital.time</td>
+<td align="left">15</td>
+<td align="left">6.6</td>
+<td align="left">7</td>
+<td align="left">0.99</td>
+<td align="left">5</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">satificatiion</td>
+<td align="left">15</td>
+<td align="left">84.67</td>
+<td align="left">85</td>
+<td align="left">3.62</td>
+<td align="left">79</td>
+<td align="left">90</td>
+</tr>
+<tr class="odd">
+<td align="left">cosmics</td>
+<td align="left">15</td>
+<td align="left">82.53</td>
+<td align="left">85</td>
+<td align="left">4.39</td>
+<td align="left">76</td>
+<td align="left">90</td>
+</tr>
+<tr class="even">
+<td align="left">group</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="单孔腹后腔镜组的数据统计汇总" class="section level3">
+<h3>单孔腹后腔镜组的数据统计汇总：</h3>
+<pre><code>less&lt;-subset(data,group==&quot;LESS&quot;)# 提取单孔腹腔镜组数据
+summ(less)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var. name</th>
+<th align="left">obs.</th>
+<th align="left">mean</th>
+<th align="left">median</th>
+<th align="left">s.d.</th>
+<th align="left">min.</th>
+<th align="left">max.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">age</td>
+<td align="left">12</td>
+<td align="left">49.83</td>
+<td align="left">49</td>
+<td align="left">10.61</td>
+<td align="left">28</td>
+<td align="left">62</td>
+</tr>
+<tr class="even">
+<td align="left">height.cm</td>
+<td align="left">12</td>
+<td align="left">170.33</td>
+<td align="left">172</td>
+<td align="left">7.51</td>
+<td align="left">155</td>
+<td align="left">180</td>
+</tr>
+<tr class="odd">
+<td align="left">height.m</td>
+<td align="left">12</td>
+<td align="left">1.7</td>
+<td align="left">1.72</td>
+<td align="left">0.08</td>
+<td align="left">1.55</td>
+<td align="left">1.8</td>
+</tr>
+<tr class="even">
+<td align="left">weight</td>
+<td align="left">12</td>
+<td align="left">67.58</td>
+<td align="left">66.5</td>
+<td align="left">9.39</td>
+<td align="left">54</td>
+<td align="left">90</td>
+</tr>
+<tr class="odd">
+<td align="left">BMI</td>
+<td align="left">12</td>
+<td align="left">23.26</td>
+<td align="left">22.51</td>
+<td align="left">2.53</td>
+<td align="left">20.32</td>
+<td align="left">29.05</td>
+</tr>
+<tr class="even">
+<td align="left">location</td>
+<td align="left">12</td>
+<td align="left">1.417</td>
+<td align="left">1</td>
+<td align="left">0.515</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">size</td>
+<td align="left">12</td>
+<td align="left">1.32</td>
+<td align="left">1.3</td>
+<td align="left">0.28</td>
+<td align="left">0.9</td>
+<td align="left">1.7</td>
+</tr>
+<tr class="even">
+<td align="left">operating.time</td>
+<td align="left">12</td>
+<td align="left">83.17</td>
+<td align="left">81.5</td>
+<td align="left">20.48</td>
+<td align="left">55</td>
+<td align="left">120</td>
+</tr>
+<tr class="odd">
+<td align="left">bleeding.V</td>
+<td align="left">12</td>
+<td align="left">16.25</td>
+<td align="left">15</td>
+<td align="left">6.08</td>
+<td align="left">5</td>
+<td align="left">25</td>
+</tr>
+<tr class="even">
+<td align="left">eat.time</td>
+<td align="left">12</td>
+<td align="left">1.42</td>
+<td align="left">1</td>
+<td align="left">0.51</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">draw.V</td>
+<td align="left">12</td>
+<td align="left">20.33</td>
+<td align="left">19</td>
+<td align="left">6.53</td>
+<td align="left">10</td>
+<td align="left">30</td>
+</tr>
+<tr class="even">
+<td align="left">drae.time</td>
+<td align="left">12</td>
+<td align="left">5</td>
+<td align="left">5</td>
+<td align="left">0.6</td>
+<td align="left">4</td>
+<td align="left">6</td>
+</tr>
+<tr class="odd">
+<td align="left">hospital.time</td>
+<td align="left">12</td>
+<td align="left">6.42</td>
+<td align="left">6</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">satificatiion</td>
+<td align="left">12</td>
+<td align="left">88.5</td>
+<td align="left">90</td>
+<td align="left">4.15</td>
+<td align="left">81</td>
+<td align="left">93</td>
+</tr>
+<tr class="odd">
+<td align="left">cosmics</td>
+<td align="left">12</td>
+<td align="left">86.17</td>
+<td align="left">88</td>
+<td align="left">4.17</td>
+<td align="left">80</td>
+<td align="left">92</td>
+</tr>
+<tr class="even">
+<td align="left">group</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="一步法分组汇总" class="section level3">
+<h3>一步法分组汇总：</h3>
+<p>但是这样需要多建两个表，还是不方便，我们可以用<strong>psych</strong>包，可以使用<code>describeBy</code>函数，直接就统计好了各组的统计结果，结果很丰富，而且因子还用*标记出来了，而且统计量更多，代码如下：</p>
+<pre><code>library(psych)
+describeBy(data,data$group)</code></pre>
+<pre><code>## 
+##  Descriptive statistics by group 
+## group: LESS
+##                vars  n   mean    sd median trimmed   mad    min    max range
+## age               1 12  49.83 10.61  49.00   50.80 12.60  28.00  62.00 34.00
+## height.cm         2 12 170.33  7.51 172.00  170.90  7.41 155.00 180.00 25.00
+## height.m          3 12   1.70  0.08   1.72    1.71  0.07   1.55   1.80  0.25
+## weight            4 12  67.58  9.39  66.50   66.70  7.41  54.00  90.00 36.00
+## BMI               5 12  23.26  2.53  22.51   22.98  2.34  20.32  29.05  8.73
+## location*         6 12   1.42  0.51   1.00    1.40  0.00   1.00   2.00  1.00
+## size              7 12   1.32  0.28   1.30    1.32  0.30   0.90   1.70  0.80
+## operating.time    8 12  83.17 20.48  81.50   82.30 24.46  55.00 120.00 65.00
+## bleeding.V        9 12  16.25  6.08  15.00   16.50  7.41   5.00  25.00 20.00
+## eat.time         10 12   1.42  0.51   1.00    1.40  0.00   1.00   2.00  1.00
+## draw.V           11 12  20.33  6.53  19.00   20.40  7.41  10.00  30.00 20.00
+## drae.time        12 12   5.00  0.60   5.00    5.00  0.00   4.00   6.00  2.00
+## hospital.time    13 12   6.42  1.00   6.00    6.40  1.48   5.00   8.00  3.00
+## satificatiion    14 12  88.50  4.15  90.00   88.80  2.97  81.00  93.00 12.00
+## cosmics          15 12  86.17  4.17  88.00   86.20  3.71  80.00  92.00 12.00
+## group*           16 12   1.00  0.00   1.00    1.00  0.00   1.00   1.00  0.00
+##                 skew kurtosis   se
+## age            -0.60    -0.81 3.06
+## height.cm      -0.51    -0.91 2.17
+## height.m       -0.51    -0.91 0.02
+## weight          0.82     0.27 2.71
+## BMI             0.82    -0.33 0.73
+## location*       0.30    -2.06 0.15
+## size           -0.18    -1.39 0.08
+## operating.time  0.28    -1.29 5.91
+## bleeding.V     -0.16    -1.08 1.75
+## eat.time        0.30    -2.06 0.15
+## draw.V          0.14    -1.48 1.88
+## drae.time       0.00    -0.48 0.17
+## hospital.time   0.21    -1.21 0.29
+## satificatiion  -0.77    -1.13 1.20
+## cosmics        -0.44    -1.39 1.20
+## group*           NaN      NaN 0.00
+## ------------------------------------------------------------ 
+## group: LUL
+##                vars  n   mean    sd median trimmed   mad    min    max range
+## age               1 15  48.53 10.93  48.00   48.69  7.41  25.00  70.00 45.00
+## height.cm         2 15 167.40  6.84 169.00  167.15  8.90 158.00 180.00 22.00
+## height.m          3 15   1.67  0.07   1.69    1.67  0.09   1.58   1.80  0.22
+## weight            4 15  68.67  7.93  69.00   68.31  4.45  56.00  86.00 30.00
+## BMI               5 15  24.46  2.00  24.46   24.30  1.60  21.34  29.76  8.42
+## location*         6 15   1.60  0.51   2.00    1.62  0.00   1.00   2.00  1.00
+## size              7 15   1.33  0.39   1.30    1.31  0.44   0.80   2.10  1.30
+## operating.time    8 15  57.67 11.47  55.00   56.92 14.83  45.00  80.00 35.00
+## bleeding.V        9 15  21.67  9.94  25.00   21.92  7.41   5.00  35.00 30.00
+## eat.time         10 15   1.73  0.46   2.00    1.77  0.00   1.00   2.00  1.00
+## draw.V           11 15  17.80  6.32  17.00   17.85  4.45   5.00  30.00 25.00
+## drae.time        12 15   5.60  0.99   6.00    5.62  0.00   4.00   7.00  3.00
+## hospital.time    13 15   6.60  0.99   7.00    6.62  0.00   5.00   8.00  3.00
+## satificatiion    14 15  84.67  3.62  85.00   84.69  4.45  79.00  90.00 11.00
+## cosmics          15 15  82.53  4.39  85.00   82.46  4.45  76.00  90.00 14.00
+## group*           16 15   1.00  0.00   1.00    1.00  0.00   1.00   1.00  0.00
+##                 skew kurtosis   se
+## age            -0.03    -0.15 2.82
+## height.cm       0.17    -1.29 1.77
+## height.m        0.17    -1.29 0.02
+## weight          0.21    -0.36 2.05
+## BMI             0.87     0.89 0.52
+## location*      -0.37    -1.98 0.13
+## size            0.69    -0.58 0.10
+## operating.time  0.44    -1.16 2.96
+## bleeding.V     -0.33    -1.26 2.57
+## eat.time       -0.95    -1.16 0.12
+## draw.V         -0.17    -0.47 1.63
+## drae.time      -0.47    -1.04 0.25
+## hospital.time  -0.47    -1.04 0.25
+## satificatiion  -0.14    -1.31 0.93
+## cosmics        -0.17    -1.24 1.13
+## group*           NaN      NaN 0.00</code></pre>
+<hr />
+</div>
+</div>
+<div id="fisher精确概率检验" class="section level2">
+<h2>Fisher精确概率检验</h2>
+<p>由于本文存在两个计数资料，即结石部位和性别，但是样本量又少，所以直接用Fisher精确概率检验，当然R语言里面包也很多。</p>
+<p>首先，需要把数据提出来，一个table函数可以直接计算好。</p>
+<pre class="r"><code>location&lt;-table(data$location,data$group)
+location #看一下结果</code></pre>
+<pre><code>##        
+##         LESS LUL
+##   Left     7   6
+##   Right    5   9</code></pre>
+<pre class="r"><code>fisher.test(location)$p.value # 只需要p值，如果要看所有结果，可以把$及后面去掉</code></pre>
+<pre><code>## [1] 0.4494818</code></pre>
+<p>一般情况下是要做<strong>卡方检验</strong>，首先需要计数理论频数，注意理论频数不是个数，需要统计，然后才知道选择那种统计学方法。不过<code>epiDisplay</code>包里有个很简单的<code>cc()</code>函数，也可以一步把卡方和Fisher的结果全部算好。</p>
+<pre class="r"><code>epiDisplay::cc(cctable = location) ##可以计算优势比OR值和两种列联表的检验</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre><code>## 
+##        
+##         LESS LUL Total
+##   Left     7   6    13
+##   Right    5   9    14
+##   Total   12  15    27
+## 
+## OR =  2.1 
+## 95% CI =  0.45, 9.84  
+## Chi-squared = 0.9, 1 d.f., P value = 0.343
+## Fisher&#39;s exact test (2-sided) P value = 0.449</code></pre>
+<p>这里把计算理论频数和各种的检验当时代码放出，自行选择运算方法</p>
+<pre class="r"><code>#chisq.test(data)$expected  #理论频数的计数；
+
+#chisq.test(data,correct=FALSE)  #一般的卡方检验，不用校正，注意默认是校正，所以一定要改；
+#chisq.test(data,correct=TURE)  #校正卡方检验，适用总数&gt;40但理论频数&lt;5 ；
+
+#fisher.test(data)  # Fisher精确概率检验。</code></pre>
+</div>
+<div id="两独立样本的t检验或非参数检验" class="section level2">
+<h2>两独立样本的T检验或非参数检验？</h2>
+<div id="首先要做正态性检验" class="section level3">
+<h3>首先要做正态性检验</h3>
+<p>我的论文里用的是<code>Levene</code>检验，这里用<code>shapiro</code>检验。正确的统计方法应该是分组统计，我之前选择的是整体统计，其实这样也可以，但是不严谨。</p>
+<p>最严谨的办法其实是把每一个变量按照分组分别进行正态检验，如果两组里面哪怕有一组正态分布，一组不正态分布，也是不正态分布，要选择非参数检验。</p>
+<p>下面的函数是分别统计，可以用<code>tapply()</code>，也可以换成<code>by()</code></p>
+<pre class="r"><code>with(data,tapply(data$age, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.91121, p-value = 0.2211
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.97008, p-value = 0.8592</code></pre>
+<pre class="r"><code>with(data,tapply(data$BMI, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.90228, p-value = 0.1697
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.92549, p-value = 0.2334</code></pre>
+<pre class="r"><code>with(data,tapply(data$size, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.91928, p-value = 0.28
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.90977, p-value = 0.1343</code></pre>
+<pre class="r"><code>with(data,tapply(data$operating.time, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.96325, p-value = 0.829
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.9148, p-value = 0.1604</code></pre>
+<pre class="r"><code>with(data,tapply(data$bleeding.V, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.93976, p-value = 0.495
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.92985, p-value = 0.2714</code></pre>
+<pre class="r"><code>with(data,tapply(data$eat.time, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.63959, p-value = 0.0002342
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.5609, p-value = 1.139e-05</code></pre>
+<pre class="r"><code>with(data,tapply(data$draw.V, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.91992, p-value = 0.2852
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.97443, p-value = 0.9173</code></pre>
+<pre class="r"><code>with(data,tapply(data$drae.time, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.77442, p-value = 0.004866
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.82961, p-value = 0.009051</code></pre>
+<pre class="r"><code>with(data,tapply(data$hospital.time, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.89505, p-value = 0.1369
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.82961, p-value = 0.009051</code></pre>
+<pre class="r"><code>with(data,tapply(data$satificatiion, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.8244, p-value = 0.01799
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.91659, p-value = 0.1709</code></pre>
+<pre class="r"><code>with(data,tapply(data$cosmics, group, shapiro.test))</code></pre>
+<pre><code>## $LESS
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.87072, p-value = 0.06675
+## 
+## 
+## $LUL
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.9033, p-value = 0.1069</code></pre>
+<p>之后就是痛苦的手动观察了，我之前用SPSS是当作整体去观察的，不是很严谨，分组统计很严谨，但是也很费时费神，网上现在也有好的在线工具，比如仙桃学术，但是如果全部录入数据的话，统计虽然也是分组做正态性检验，但是最后却选择了整体的结果，也就是统一用一个方法做显著性统计，这样其实也不是很严谨，这种办法确实简化了流程，但是结果欠佳。</p>
+<p>关于统计学方法，我懂的也不是很深刻，至于到底选择哪种办法，也只能算见仁见智了。</p>
+<p>这里我们看到<strong>年龄、BMI、结石大小、手术时间、出血量、引流量、美容评分</strong>的p值，两组都大于0.05，符合正态分布，备选t检验。</p>
+<p>而<strong>肠道恢复时间、拔管时间、住院时间</strong>（LUL组不正态分布）、<strong>满意度（</strong>LELL组不正态）的p值不完全大于0.05，因此要选择非参数检验（我们选择<strong>Wilcoxon检验</strong>）。</p>
+</div>
+<div id="然后要做方差齐性检验" class="section level3">
+<h3>然后要做方差齐性检验</h3>
+<p>挑选需要的变量做方差齐性检验，如果P&gt;0.05就用t检验，如果P&gt;0.05就用校正的t检验</p>
+<p>可以看到<strong>手术时间</strong>不符合方差齐性检验，要选择校正t检验，</p>
+<p>而<strong>年龄、BMI、结石大小、手术时间、出血量、引流量、美容评</strong>直接用t检验。</p>
+<pre class="r"><code>var.test(age ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.9352998</code></pre>
+<pre class="r"><code>var.test(BMI ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.4074894</code></pre>
+<pre class="r"><code>var.test(size ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.2568057</code></pre>
+<pre class="r"><code>var.test(operating.time ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.04462392</code></pre>
+<pre class="r"><code>var.test(bleeding.V ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.1077836</code></pre>
+<pre class="r"><code>var.test(draw.V ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.8912957</code></pre>
+<pre class="r"><code>var.test(cosmics ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.8811802</code></pre>
+<pre class="r"><code>## 非正态分布，其实可以不用做方差齐性检验了，但是可以顺手做一下
+var.test(eat.time  ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.6675639</code></pre>
+<pre class="r"><code>var.test(drae.time  ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.108303</code></pre>
+<pre class="r"><code>var.test(hospital.time  ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.9522874</code></pre>
+<pre class="r"><code>var.test(satificatiion  ~ group, data = data)$p.value</code></pre>
+<pre><code>## [1] 0.6226921</code></pre>
+</div>
+<div id="显著性统计检验" class="section level3">
+<h3>显著性统计检验</h3>
+<p>默认的其实是双尾检验，其实如果我们要想知道LESS是否比LUL好的时候，应该是要用单尾检验的，这里分为两种情况</p>
+<ol style="list-style-type: decimal">
+<li>基本参数的比较用<strong>双尾检验</strong>，比如年龄、BMI和结石大小（这些都是术前的资料，不影响结果）</li>
+</ol>
+<p>那么统计方法就是，记住默认的是不具有齐性，很奇怪的设定</p>
+<pre class="r"><code>t.test(age ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.7583487</code></pre>
+<pre class="r"><code>t.test(BMI ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.1798178</code></pre>
+<pre class="r"><code>t.test(size ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.9414302</code></pre>
+<p>结果与我论文的一模一样，可重复。。。</p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>单尾事件，其实如果不知道什么结果的话，直接用双尾没有问题，但是如果你想知道LESS是不是比LUL好，就要用单尾假设，理论上先用双尾检验，然后再次用单尾检验一次。</p>
+<p>这里非参数检验会提示注意消息，不用管</p></li>
+</ol>
+<pre class="r"><code>## 方差不齐的要校正，也就是要var.equal=F，默认的就是不齐
+t.test(operating.time ~ group,data = data,var.equal = FALSE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.001341368</code></pre>
+<pre class="r"><code>## 方差齐的不用校正，也就是var.equal=T，这个要手动设定
+t.test(bleeding.V ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.11083</code></pre>
+<pre class="r"><code>t.test(draw.V ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.3172611</code></pre>
+<pre class="r"><code>t.test(cosmics ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.03858052</code></pre>
+<pre class="r"><code>## 非参数检验
+wilcox.test(eat.time ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## Warning in wilcox.test.default(x = c(2L, 2L, 1L, 1L, 1L, 2L, 1L, 2L, 1L, :
+## cannot compute exact p-value with ties</code></pre>
+<pre><code>## [1] 0.1086508</code></pre>
+<pre class="r"><code>wilcox.test(drae.time ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## Warning in wilcox.test.default(x = c(6L, 5L, 5L, 5L, 4L, 5L, 6L, 5L, 4L, :
+## cannot compute exact p-value with ties</code></pre>
+<pre><code>## [1] 0.05944984</code></pre>
+<pre class="r"><code>wilcox.test(hospital.time ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## Warning in wilcox.test.default(x = c(8L, 7L, 6L, 6L, 5L, 6L, 7L, 5L, 6L, :
+## cannot compute exact p-value with ties</code></pre>
+<pre><code>## [1] 0.5556323</code></pre>
+<pre class="r"><code>wilcox.test(satificatiion ~ group,data = data,var.equal = TRUE,alternative = &quot;two.sided&quot;)$p.value</code></pre>
+<pre><code>## Warning in wilcox.test.default(x = c(90L, 92L, 90L, 83L, 91L, 88L, 90L, : cannot
+## compute exact p-value with ties</code></pre>
+<pre><code>## [1] 0.01485532</code></pre>
+<hr />
+<p>这里的结果计算出来以后，T检验或近似T检验，与我的论文结果数字一致，而非参数检验有细微差异，但是结果趋势也是一模一样。。。</p>
+<p>然后是单尾事件，可以自定义好还是坏，函数是greater和less，自己可以尝试一下，我就不演示了</p>
+<pre class="r"><code># t.test(operating.time ~ group,data = data,var.equal = FALSE,alternative = &quot;greater&quot;)$p.value
+## 方差齐的不用校正，也就是var.equal=T，这个要手动设定
+# t.test(bleeding.V ~ group,data = data,var.equal = TRUE,alternative = &quot;less&quot;)$p.value
+# t.test(draw.V ~ group,data = data,var.equal = TRUE,alternative = &quot;less&quot;)$p.value
+# t.test(cosmics ~ group,data = data,var.equal = TRUE,alternative = &quot;greater&quot;)$p.value
+## 非参数检验
+# wilcox.test(eat.time ~ group,data = data,var.equal = TRUE,alternative = &quot;less&quot;)$p.value
+# wilcox.test(drae.time ~ group,data = data,var.equal = TRUE,alternative = &quot;less&quot;)$p.value
+# wilcox.test(hospital.time ~ group,data = data,var.equal = TRUE,alternative = &quot;less&quot;)$p.value
+# wilcox.test(satificatiion ~ group,data = data,var.equal = TRUE,alternative = &quot;greater&quot;)$p.value</code></pre>
+</div>
+</div>
+<div id="手术曲线" class="section level2">
+<h2>手术曲线</h2>
+<p>我的论文里有个SPSS做的手术曲线，这里一步作图</p>
+<pre class="r"><code>data$seq&lt;-c(1:15,1:12) # 定义手术顺序
+data$seq=factor(data$seq) #转换为因子，不然显示的是数字
+suppressMessages(library(ggpubr))
+ggline(data,&quot;seq&quot;,&quot;operating.time&quot;,
+               facet.by = &quot;group&quot;,scale=&#39;free&#39;,ncol=1,
+               xlab = &quot;Operation sequence&quot;,
+               ylab=&quot;Operation time (min)&quot;,
+               ggtheme = theme_bw(base_size = 12)) + #主题和字号
+              ylim(0,120) # 设置Y轴范围，不设置的话会从最小值开始</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+</div>

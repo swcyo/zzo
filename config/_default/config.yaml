@@ -1,17 +1,17 @@
 baseURL: 
-title: Hugo Zzo Theme
+title: 欧阳松的博客
 theme: hugo-theme-zzo
-defaultContentLanguage: en
+defaultContentLanguage: zh
 defaultContentLanguageInSubdir: yes
 hasCJKLanguage: yes
-summaryLength: 70
+summaryLength: 80
 buildFuture: yes
-copyright: '&copy;{year}, All Rights Reserved'
+copyright: '&copy;{since 2021}, 欧阳松'
 timeout: 10000
 enableEmoji: yes
 paginate: 13
 rssLimit: 100
-enableGitInfo: no
+enableGitInfo: yes
 googleAnalytics: ''
 markup:
   goldmark:

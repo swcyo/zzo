@@ -1,0 +1,238 @@
+---
+title: 一次性运行多组GSEA富集分析
+author: 欧阳松
+date: '2022-11-20'
+slug: multi-GSEA
+categories:
+  - GSEA
+  - 多组
+  - 富集分析
+tags:
+  - GSEA
+  - 富集分析
+description: ~
+hideToc: yes
+enableToc: yes
+enableTocContent: no
+tocFolding: no
+tocPosition: inner
+tocLevels:
+  - h2
+  - h3
+  - h4
+series:
+  - ~
+image: ~
+---
+
+
+
+<p>最近Y叔开发了一个<strong>gson</strong>格式的包，制定了一种新的对象标准，并且嵌入到了<strong>clusterProfiler</strong>包里，通过你可以通过<code>gson_GO()</code>、<code>gson_KEGG()</code>、<code>gson_WP()</code>可以在线爬取相应的’GSON’对象，然后可以进行后续的GSEA或者普通的富集分析。</p>
+<p>传统的富集分析或者GSEA分析一次只能进行一种结果的分析，比如GO、KEGG、Reactome_human或者WikiPathways。使用<strong>clusterProfiler</strong>包我们可以做到将GO的三组结果进行分面，也可以使用<code>compareCluster()</code>将多个基因列表同时进行某一种结果的富集分析，然而却不能将多个结果（比如GO和KEGG）一次性进行分析。</p>
+<p>新开发的<strong>gson</strong>包中有一个<code>gsonList()</code>函数，可以进行多组富集分析，以list的形式进行组合，然后通过<strong>enrichplot</strong>包中的<code>autofacet()</code>函数就可以将多个list的结果。这个教程在<a href="https://mp.weixin.qq.com/s/17ItITYzILmWv_Hcs80fAA">一次搞定所有的富集分析</a>这个公众号里面。结果如下：</p>
+<p><img src="images/paste-D17FC953.png" /></p>
+<p><strong>但是</strong>，这个教程刚出的时候，我就想试试GSEA能不能行，结果发现<strong>enrichplot</strong>包中的<code>autofacet()</code>函数并不支持GSEA结果，所以我当天就在Y叔公众号和Github进行了<a href="https://github.com/YuLab-SMU/gson/issues/7#event-7697215884">提问</a>，经过一个月的等待，终于在前几天收到了解决的邮件。还给我发了一个<a href="https://github.com/YuLab-SMU/enrichplot/files/9894733/test_dotplot.pdf">测试pdf</a>结果，确实可以分面多个GSEA的结果了。</p>
+<p><img src="images/paste-26CF6E2C.png" /></p>
+<p><strong>不过</strong>，我还是发现一个问题，那就是GSEA本身就包含一个分面，根据NES值分为激活和抑制（这个功能可以通过<strong>ggplot2</strong>的<code>facet_grid(~.sign)</code>实现），那么想实现多个富集分析列表的激活和抑制却又卡住了。</p>
+<blockquote>
+<p>我发现：</p>
+<p>使用了<code>autofacet()</code>，就不能使用<code>facet_grid(~.sign)</code>；</p>
+<p>使用了<code>facet_grid(~.sign)</code>，就不能使用<code>autofacet()</code>。</p>
+</blockquote>
+<p>当然这个Bug可以通过拼接功能实现，但双分面才是我要的结果，这个bug我也已经反映了，不知道什么时候能够解决。</p>
+<hr />
+<p>说完了前言，现在就开始正式演示，我们可以一次性分析BP和KEGG，也可以一次性运行KEGG和Reactome这两种信号通路，或者本文<strong>一次性运行KEGG和WikiPathways这两种信号通路</strong>。</p>
+<div id="获得gson对象" class="section level2">
+<h2>获得GSON对象</h2>
+<div id="gson库" class="section level3">
+<h3>GSON库</h3>
+<p>Y叔的工作网页中制作了一些gson格式的基因集库，我们可以直接下载好并且使用，网址是<a href="https://yulab-smu.top/gson-files/" class="uri">https://yulab-smu.top/gson-files/</a></p>
+<div class="figure">
+<img src="images/paste-15D7A173.png" alt="" />
+<p class="caption">Y叔的库</p>
+</div>
+<p><strong>然而</strong>，这个基因集库中还没有收录WikiPathways的结果，并且还需要访问Github才能下载。</p>
+<p>所以我重新制作了一下这个库，顺便更新了一下时间，将结果导入到码云Gitee上了，地址是</p>
+<p><a href="http://swcyo.gitee.io/gson-file/" class="uri">http://swcyo.gitee.io/gson-file/</a></p>
+<div class="figure">
+<img src="images/paste-95B391C6.png" alt="" />
+<p class="caption">我修改的库</p>
+</div>
+<p>你也可以这样点击直接下载：</p>
+<blockquote>
+<p><a href="https://swcyo.gitee.io/gson-file/GO_ALL_human.gson">Gene Ontology;ALL</a></p>
+<p><a href="https://swcyo.gitee.io/gson-file/GO_BP_human.gson">Gene Ontology;BP</a></p>
+<p><a href="https://swcyo.gitee.io/gson-file/GO_CC_human.gson">Gene Ontology;CC</a></p>
+<p><a href="https://swcyo.gitee.io/gson-file/GO_MF_human.gson">Gene Ontology;MF</a></p>
+<p><a href="https://swcyo.gitee.io/gson-file/KEGG_human.gson">KEGG</a></p>
+<p><a href="https://swcyo.gitee.io/gson-file/MKEGG_human.gson">MKEGG</a></p>
+<p><a href="https://swcyo.gitee.io/gson-file/Reactome_human.gson">reactome pathway</a></p>
+<p><a href="https://swcyo.gitee.io/gson-file/WikiPathways_human.gson">WikiPathways</a></p>
+</blockquote>
+</div>
+<div id="在线gson" class="section level3">
+<h3>在线GSON</h3>
+<ul>
+<li>我们使用最常用的BP生物学功能和KEGG信号通路进行演示</li>
+</ul>
+<!-- -->
+<pre><code>library(clusterProfiler)
+BP &lt;- gson_GO(OrgDb = org.Hs.eg.db, keytype = &#39;ENTREZID&#39;, ont = &quot;BP&quot;)
+KEGG &lt;- gson_KEGG(species = &quot;hsa&quot;, KEGG_Type=&quot;KEGG&quot;, keyType=&quot;kegg&quot;) </code></pre>
+<p>如果你想获得目前可获得的所有结果，可以通过<strong>clusterProfiler</strong>的<code>gson_GO()</code>，<code>gson_KEGG()</code>，<code>gson_WP()</code>和<strong>ReactomePA</strong>的<code>gson_Reactome()</code>去爬相应背景基因集的最新数据，然后保存到本地使用。代码如下：</p>
+<pre><code># GO
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(gson)
+gson_BP_human &lt;- gson_GO(OrgDb = org.Hs.eg.db, keytype = &#39;ENTREZID&#39;, ont = &quot;BP&quot;)
+gson_MF_human &lt;- gson_GO(OrgDb = org.Hs.eg.db, keytype = &#39;ENTREZID&#39;, ont = &quot;MF&quot;)
+gson_CC_human &lt;- gson_GO(OrgDb = org.Hs.eg.db, keytype = &#39;ENTREZID&#39;, ont = &quot;CC&quot;)
+gson_ALL_human &lt;- gson_GO(OrgDb = org.Hs.eg.db, keytype = &#39;ENTREZID&#39;, ont = &quot;ALL&quot;)
+write.gson(gson_BP_human, file = &quot;GO_BP_human.gson&quot;)
+write.gson(gson_MF_human, file = &quot;GO_MF_human.gson&quot;)
+write.gson(gson_CC_human, file = &quot;GO_CC_human.gson&quot;)
+write.gson(gson_ALL_human, file = &quot;GO_ALL_human.gson&quot;)
+
+# KEGG
+KEGG_human &lt;- gson_KEGG(species = &quot;hsa&quot;, KEGG_Type=&quot;KEGG&quot;, keyType=&quot;kegg&quot;) 
+MKEGG_human &lt;- gson_KEGG(species = &quot;hsa&quot;, KEGG_Type=&quot;MKEGG&quot;, keyType=&quot;kegg&quot;) 
+write.gson(KEGG_human, file = &quot;KEGG_human.gson&quot;)
+write.gson(MKEGG_human, file = &quot;MKEGG_human.gson&quot;)
+
+# WikiPathways
+WikiPathways_human &lt;- gson_WP(&quot;Homo sapiens&quot;) 
+write.gson(WikiPathways_human, file = &quot;WikiPathways_human.gson&quot;)
+
+# Reactome
+library(ReactomePA)
+Reactome_human &lt;- gson_Reactome(organism = &quot;human&quot;)
+write.gson(Reactome_human, file = &quot;Reactome_human.gson&quot;)</code></pre>
+</div>
+</div>
+<div id="加载本地gson对象" class="section level2">
+<h2>加载本地GSON对象</h2>
+<p>如果通过上述代码把gson文件下载到了本地文件夹，我们可以通过<strong>gson</strong>的<code>read.gson()</code>函数进行加载。</p>
+<pre><code>library(gson)
+KEGG&lt;-read.gson(&quot;KEGG_human.gson&quot;)
+WP&lt;-read.gson(&quot;WikiPathways_human.gson&quot;)</code></pre>
+</div>
+<div id="运行gsea" class="section level2">
+<h2>运行GSEA</h2>
+<p>我们使用<strong>DOSE</strong>包中geneList数据列表进行GSEA演示</p>
+<pre class="r"><code>library(clusterProfiler)
+library(gson)
+library(enrichplot)
+# 构建gson列表
+gsonlist &lt;- gsonList(BP = BP, KEGG=KEGG)
+data(geneList,package = &#39;DOSE&#39;)
+# 一行运行多组GSEA
+GSEA &lt;- GSEA(geneList, 
+                 gson = gsonlist,
+                 eps=0, # 设置这个可以获得更好的p值
+                 pvalueCutoff = 0.9 # p值调大一点
+             )</code></pre>
+</div>
+<div id="可视化" class="section level2">
+<h2>可视化</h2>
+<p>使用<code>dotplot()</code>对多组GSEA结果绘制点图，但是这个结果把BP和KEGG的两种结果全部都包含了，不能体现出具体的结果，见Figure <a href="#fig:gsea1">1</a>所示。</p>
+<pre class="r"><code>dotplot(GSEA)</code></pre>
+<div class="figure"><span style="display:block;" id="fig:gsea1"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/gsea1-1.png" alt="多组GSEA结果同时显示" width="672" />
+<p class="caption">
+Figure 1: 多组GSEA结果同时显示
+</p>
+</div>
+<div id="自动分面" class="section level3">
+<h3>自动分面</h3>
+<p>使用<code>autofacet()</code>可以很好的显示分面，默认是按行分面，见Figure <a href="#fig:auto1">2</a>所示。</p>
+<pre class="r"><code>dotplot(GSEA,showCategory = 8)+autofacet()</code></pre>
+<div class="figure"><span style="display:block;" id="fig:auto1"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/auto1-1.png" alt="按行对两种结果进行分面显示" width="672" />
+<p class="caption">
+Figure 2: 按行对两种结果进行分面显示
+</p>
+</div>
+<p>我们也可以按列分面</p>
+<pre class="r"><code>dotplot(GSEA)+autofacet(by=&#39;col&#39;)</code></pre>
+<div class="figure"><span style="display:block;" id="fig:auto2"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/auto2-1.png" alt="按列对两种结果进行分面显示" width="672" />
+<p class="caption">
+Figure 3: 按列对两种结果进行分面显示
+</p>
+</div>
+</div>
+<div id="bug" class="section level3">
+<h3>Bug</h3>
+<p>我们知道GSEA是支持以NES为界，分为激活和抑制两个结果的，传统方法是<code>+facet_grid(~.sign)</code>，但是<code>autofacet()</code>和<code>+facet_grid(~.sign)</code>目前只能显示一种结果。</p>
+<p>可能是数据有误，只跑出列激活的结果，见Figure <a href="#fig:facet">4</a>所示。</p>
+<pre class="r"><code>library(ggplot2)
+dotplot(GSEA)+facet_grid(~.sign)</code></pre>
+<div class="figure"><span style="display:block;" id="fig:facet"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/facet-1.png" alt="显示激活抑制通路" width="672" />
+<p class="caption">
+Figure 4: 显示激活抑制通路
+</p>
+</div>
+</div>
+<div id="解决方法" class="section level3">
+<h3>解决方法</h3>
+<p>目前可以通过拼图的方法对两个结果进行处理，见Figure <a href="#fig:mix">5</a>所示。</p>
+<pre class="r"><code>library(patchwork)
+p1&lt;-dotplot(GSEA$`Gene Ontology;BP`)+facet_grid(~.sign)
+p2&lt;-dotplot(GSEA$KEGG)+facet_grid(~.sign)
+p1/p2</code></pre>
+<div class="figure"><span style="display:block;" id="fig:mix"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/mix-1.png" alt="结果拼图" width="672" />
+<p class="caption">
+Figure 5: 结果拼图
+</p>
+</div>
+</div>
+<div id="barplot" class="section level3">
+<h3>Barplot</h3>
+<p>由于Y叔的GSEA还没有开发Barplot的方法，而这个结果也没有看到抑制的结果，可以使用我自己开发的<strong>GSEAbar</strong>这个包进行美化，我设置了<code>gseabar()</code>和<code>gseabar2()</code>两种显示方法，而且还添加了一些细节。</p>
+<p>比如按NES值排序，以p值的颜色显示大小，见Figure <a href="#fig:gseabar">6</a>所示。</p>
+<pre class="r"><code># pak::pak(&quot;swcyo/GSEAbar&quot;) # 没有安装的可以使用这个代码安装
+library(GSEAbar)
+p3&lt;-gseabar(GSEA$`Gene Ontology;BP`,
+            title = &quot;Gene Ontology;BP&quot;, #标题
+            n=8,#显示的数量
+            length = 45, #文本的长度
+            divide = T #结果分开显示
+            )
+p4&lt;-gseabar(GSEA$KEGG,
+            title = &quot;KEGG&quot;,
+            n=8,
+            length = 45,
+            reverse = T,#转换一下方向
+            divide = T)
+p3/p4</code></pre>
+<div class="figure"><span style="display:block;" id="fig:gseabar"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/gseabar-1.png" alt="按NES值排序的GSEA柱状图" width="672" />
+<p class="caption">
+Figure 6: 按NES值排序的GSEA柱状图
+</p>
+</div>
+<p>还可以按-log10的p值排序，但是这个体现不出NES值，见Figure <a href="#fig:gseabar2">7</a>所示。</p>
+<pre class="r"><code>p5&lt;-gseabar2(GSEA$`Gene Ontology;BP`,
+            title = &quot;Gene Ontology;BP&quot;,
+            n=8,
+            length = 45)
+p6&lt;-gseabar2(GSEA$KEGG,
+            title = &quot;KEGG&quot;,
+            n=8,
+            length = 45,
+            reverse = T)
+p5/p6</code></pre>
+<div class="figure"><span style="display:block;" id="fig:gseabar2"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/gseabar2-1.png" alt="按p值排的GSEA柱状图序" width="672" />
+<p class="caption">
+Figure 7: 按p值排的GSEA柱状图序
+</p>
+</div>
+</div>
+<div id="其他可视化结果" class="section level3">
+<h3>其他可视化结果</h3>
+<p>目前除了<code>dotplot()</code>以外，其他的可视化结果均未支持。但是我们可以对列表一个个拼图即可。</p>
+</div>
+</div>

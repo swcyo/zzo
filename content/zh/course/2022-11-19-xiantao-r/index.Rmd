@@ -1,0 +1,31 @@
+---
+title: 仙桃学术几个示例R脚本
+author: 欧阳松
+date: '2022-11-19'
+slug: xiantao-R
+categories:
+  - 仙桃学术
+tags:
+  - 仙桃学术
+description: ~
+hideToc: yes
+enableToc: yes
+enableTocContent: no
+tocFolding: no
+tocPosition: inner
+tocLevels:
+  - h2
+  - h3
+  - h4
+series:
+  - ~
+image: ~
+---
+
+仙桃学术可以很方便的进行绘图，但是最可喜的是有非常专业的统计学方法，有些绘图是有示例的demo.R脚本，这里纪录几个脚本，免得以后丢失找不到了。😅😂
+
+![](images/paste-67A11EC9.png)
+
+链接: <https://pan.baidu.com/s/1NfBnWveq-6tfsqG30ikIug?pwd=f4h3> 提取码: f4h3
+
+![](images/paste-34A70F48.png)

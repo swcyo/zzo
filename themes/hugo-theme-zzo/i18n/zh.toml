@@ -95,25 +95,25 @@ other = "总览"
 other = "固定"
 
 [nojs-message]
-other = "Please enable Javascript to view the contents"
+other = "请启用Javascript以查看内容"
 
 [posts-by-order]
 other = "TOP POSTS"
 
 [skin-dark]
-other = "dark"
+other = "暗黑主题"
 
 [skin-light]
-other = "light"
+other = "纯白主题"
 
 [skin-hacker]
-other = "hacker"
+other = "黑客主题"
 
 [skin-solarized]
-other = "solarized"
+other = "Solarized"
 
 [skin-kimbie]
-other = "kimbie"
+other = "Kimbie"
 
 [no-contents]
-other = "Nothing to Display"
+other = "没有什么可显示的"
