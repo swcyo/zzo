@@ -1,4 +1,4 @@
-baseURL: 
+baseURL: http://swcyo.rbind.io/
 title: 欧阳松的博客
 theme: hugo-theme-zzo
 defaultContentLanguage: zh
