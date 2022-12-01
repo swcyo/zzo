@@ -1,25 +1,32 @@
 ---
 title: R语言处理CCK8或MTT数据，一步绘制生长曲线
-author: Song Ou-Yang
+author: 欧阳松
 date: '2021-08-14'
-slug: r-cck8-mtt
-categories: []
-tags: [R]
-subtitle: ''
-summary: ''
-authors: []
-lastmod: '2021-08-14T18:13:28+08:00'
-featured: no
-image:
-  caption: ''
-  focal_point: ''
-  preview_only: no
-projects: []
+slug: r-cck8
+categories:
+  - CCK8
+  - 生长曲线
+tags:
+  - 画图
+description: ~
+hideToc: yes
+enableToc: no
+enableTocContent: no
+tocFolding: no
+tocPosition: inner
+tocLevels:
+  - h2
+  - h3
+  - h4
+series:
+  - ~
+image: ~
 ---
+
 CCK8数据主要是统计OD450的吸收值，一般的数据形式如下，保存为`csv`格式
 
-| Time | NC          | NC          | NC          | OE          | OE          | OE          |
-| ---- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+| Time | NC1         | NC2         | NC3         | OE1         | OE2         | OE3         |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
 | day1 | 0.549070969 | 0.549570976 | 0.547750963 | 0.543670962 | 0.536370963 | 0.545970956 |
 | day2 | 0.675742972 | 0.696628983 | 0.690574949 | 0.637390961 | 0.630422963 | 0.653620952 |
 | day3 | 0.894142977 | 0.884125994 | 0.882670941 | 0.82057096  | 0.803780962 | 0.819401947 |
@@ -27,7 +34,8 @@ CCK8数据主要是统计OD450的吸收值，一般的数据形式如下，保�
 | day5 | 1.505662991 | 1.507610027 | 1.500910915 | 1.387150955 | 1.32420196  | 1.389946927 |
 
 ## 首先我们要进行数据的预处理,把短数据转换为长数据,然后用ggpubr一步作图
-```{r}
+
+```{r message=FALSE, warning=FALSE}
 cck8 <- read.csv("~/Desktop/cck8.csv") 
 ## 宽数据转换为长数据
 library(reshape2) 
@@ -39,40 +47,49 @@ cck8_long<-melt(cck8,
 cck8_long$Group=rep(c('control', 'treat'), each = 15)  ##分为两组，每组15个数据
 ### 使用ggpubr画图，可以使用prism主题
 library(ggpubr)
-library(ggprism)
 ggline(cck8_long, x = "Time", y = "OD450", 
        color = "Group",shape='Group', 
-       add = "mean_sd",ylab = "OD450 value",
-       ggtheme = theme_prism(base_size = 12))
+       add = "mean_sd",ylab = "OD450 value")
 ```
 
 #### 加个P值，调整坐标，适当美化
-- 首先预统计看下结果,记得统计方法一定是'anova',而不是't.test'
-```{r}  
-compare_means(OD450~Group, data=cck8_long, group.by = "Time",method = 'anova')
 
-```  
-- 结果还不错，接着添加显著标志,改色lancet配色
+-   首先预统计看下结果,记得统计方法一定是'anova',而不是't.test'
+
+```
+compare_means(OD450~Group, data=cck8_long, group.by = "Time",method = 'anova')
+```
+
+```{r echo=FALSE}
+knitr::kable(compare_means(OD450~Group, data=cck8_long, group.by = "Time",method = 'anova'))
+```
+
+-   结果还不错，接着添加显著标志,改色lancet配色
+
 ```{r}
 ggline(cck8_long, x = "Time", y = "OD450", 
        color = "Group",shape='Group', title = 'xxx cell',
-       add = "mean_sd", palette = 'lancet',ylab = "OD450 value",legend = c(0.1,0.9),
-       ggtheme = theme_prism(base_size = 12))+stat_compare_means(label = "p.signif",
-                                                                 aes(group=Group),
+       add = "mean_sd", palette = 'lancet',ylab = "OD450 value",
+       legend = c(0.1,0.9))+
+  stat_compare_means(label = "p.signif",
+                     aes(group=Group),
                      method = "anova",  
                      hide.ns = TRUE)
 ```
-- 可以调的细节还有很多,比如换个背景
+
+-   可以调的细节还有很多,比如换个背景
+
 ```{r}
 ggline(cck8_long, x = "Time", y = "OD450", 
        color = "Group",shape='Group', title = 'xxx cell',
        add = "mean_sd", palette = 'lancet',ylab = "OD450 value",legend = c(0.1,0.8),
-       ggtheme = theme_bw(base_size = 12))+stat_compare_means(label = "p.signif",
-                                                                 aes(group=Group),
+       ggtheme = theme_bw(base_size = 12))+
+  stat_compare_means(label = "p.signif",
+                     aes(group=Group),
                      method = "anova",  
                      hide.ns = TRUE)
 ```
+
 细节地方AI处理一下,当然如果你安装了`esquisse`，你也可以直接导出成PPT
-```{r}
-esquisse:::ggplot_to_ppt()
-```
+
+    esquisse:::ggplot_to_ppt()
