@@ -62,11 +62,11 @@ typeIcon = "🎯"
 # whoami
 myname = "欧阳松"
 email = "ouyangsong@shzu.edu.cn"
-whoami = "在站博士后/副主任医师"
+whoami = "在站博士后/副主任医师/硕士生导师"
 bioImageUrl = ""
 useGravatar = false ## 设置为false会显示我的头像
 location = "新疆, 石河子"
-organization = "石河子大学医学院第一附属医院"
+organization = "石河子大学第一附属医院"
 link = "https://swcyo.rbind.io/"
 
 # sidebar
@@ -128,7 +128,7 @@ busuanziPagePV = true
   name = "石河子大学"
   link = "http://www.shzu.edu.cn/"
 [[footerLinks]]
-  name = "石河子大学医学院第一附属医院"
+  name = "石河子大学第一附属医院"
   link = "http://www.sdyfy.com.cn/"
 [[footerLinks]]
   name = "我的百度学术"

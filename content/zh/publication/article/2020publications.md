@@ -27,13 +27,39 @@ pinned: true
 
 -   [**Google scholar**](https://scholar.google.com/citations?hl=zh-CN&pli=1&user=eTN286IAAAAJ)
 
+## 2023年文章
+
+1.  谭明辉, 郝雨, 倪钊, 李强, 王勤章, 欧阳松（通讯作者）. ST3GAL5通过激活PPAR和抑制PI3K/AKT途径抑制膀胱癌的恶性生物学行为\[J\]. 安徽医科大学学报, 2023, 58 (09): 1458-1466.
+
+2.  刘毅, 张志强, 王理想, 钱龙, 欧阳松（通讯作者）. 前列腺等离子剜除术在基层医院中的应用探讨\[J\]. 农垦医学, 2023, 45 (04): 322-325.
+
+3.  董洪超, 欧阳松, 倪钊, 王勤章. 输尿管软镜在输尿管中上段结石合并下段狭窄中的应用\[J\]. 现代泌尿外科杂志, 2023, 28 (08): 679-682.
+
+4.  张苡鸣, 倪钊, 李强, 董洪超, 欧阳松, 王勤章. 生物反馈联合电针治疗ⅢB型慢性前列腺炎的临床疗效观察\[J\]. 吉林医学, 2023, 44 (03): 636-639.
+
+5.  Chen Y, Sun T, Gu L, **Ouyang S**, Liu K, Yuan P, Liu C. Identification of hub genes and biological mechanisms underlying the pathogenesis of asthenozoospermia and chronic epididymitis. Front Genet. 2023 Apr 21;14:1110218. doi: 10.3389/fgene.2023.1110218. PMID: 37152990; PMCID: PMC10160426.
+
+6.  Chen Y, Yuan P, Gu L, Bai J, **Ouyang S**, Sun T, Liu K, Wang Z, Liu C. Constructing a seventeen-gene signature model for non-obstructive azoospermia based on integrated transcriptome analyses and WGCNA. Reprod Biol Endocrinol. 2023 Mar 21;21(1):30. doi: 10.1186/s12958-023-01079-5. PMID: 36945018; PMCID: PMC10029246.
+
+## 2022年文章
+
+1.  谭明辉, 欧阳松, 钱彪, 郝雨, 轩留明, 孙鹏, 张永强, 王勤章. 抑制c-Kit和Cx43对膀胱收缩功能的影响及其作用机制的研究 \[J\]. 安徽医科大学学报, 2022, 57 (12): 1941-1947.
+
+2.  **欧阳松**, 李红, 李强. 基于\"互联网+教育\"的新型医学留学生教学模式初探 \[J\]. 农垦医学, 2022, 44 (05): 470-473+476.
+
+3.  轩留明, 马路平, 欧阳松, 孙鹏, 谭明辉, 张永强, 王勤章. 经尿道联合灌注SCL和Cx43基因慢病毒对糖尿病膀胱功能的影响 \[J\]. 安徽医科大学学报, 2022, 57 (10): 1546-1551.
+
+4.  轩留明, 马路平, 欧阳松, 孙鹏, 谭明辉, 张永强, 王勤章. 观察在体联合灌注SCL和Cx43基因重组慢病毒对豚鼠糖尿病膀胱逼尿肌的影响 \[J\]. 农垦医学, 2022, 44 (02): 97-101+107.
+
+5.  Wei X, Qin Y, **Ouyang S**, Qian J, Tu S, Yao J. Challenging surgical treatment of giant retroperitoneal liposarcoma: A case report. Oncology letters, 2022, 24(3), 314.
+
 ## 2020年文章
 
 1.  **Song O Y** , Liu J H , Wang Q Z . Upregulation of RAC3 in bladder cancer predicts adverse clinical outcome and increased tumor immune response\[J\]. International Journal of Clinical and Experimental Pathology, 2020, 13(12):2937-2949.
 
 2.  **Song O Y** , Liu J H , Wang Q Z . Expression patterns and a prognostic model of m 6 A-associated regulators in prostate adenocarcinoma\[J\]. Biomarkers in Medicine, 2020, 14(18):1717-1731.
 
-3.  **Ouyang S** , Liu J H , Ni Z , et al. Downregulation of ST3GAL5 is associated with muscle invasion, high grade and a poor prognosis in patients with bladder cancer\[J\]. Oncology letters, 2020, 20(1).
+3.  **Ouyang S** , Liu J H , Ni Z , et al. Downregulation of ST3GAL5 is associated with muscle invasion, high grade and a poor prognosis in patients with bladder cancer\[J\]. Oncology letters, 2020, 20(1):828--840.
 
 4.  **欧阳松**,倪钊,李强,王勤章,丁国富,刘继红.高表达MMP14与肾透明细胞癌预后及影响机制研究\[J\].农垦医学,2020,42(06):519-522.
 
